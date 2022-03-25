@@ -70,5 +70,72 @@ int main() {
 
 	}
 
+	{ //at
+	
+	std::cout << "AT" << std::endl << std::endl;
+
+	std::vector<int> vec;
+	vec.push_back(7);
+	vec.push_back(7);
+	vec.push_back(7);
+	try {
+		for (int i = 0; i < 10; ++i)
+			std::cout << vec.at(i) << " ";
+		std::cout << std::endl;
+	}
+	catch (const std::exception& e) {
+		std::cerr << std::endl << e.what() << std::endl;
+	}
+	std::cout << std::endl;
+
+	}
+
+	{ //clear
+	
+	std::cout << "CLEAR" << std::endl << std::endl;
+
+	std::vector<int> vec;
+	vec.push_back(7);
+	vec.push_back(7);
+	vec.push_back(7);
+	vec.push_back(7);
+	vec.push_back(7);
+	std::cout << "size = " << vec.size() << ", capacity = " << vec.capacity() << std::endl;
+	vec.clear();
+	std::cout << "clear" << std::endl;
+	std::cout << "size = " << vec.size() << ", capacity = " << vec.capacity() << std::endl;
+	std::cout << std::endl;
+
+	}
+
+	{ //insert
+	
+	std::cout << "INSERT" << std::endl << std::endl;
+
+	std::vector<int> vec;
+	vec.push_back(7);
+	vec.push_back(7);
+	vec.push_back(7);
+	vec.push_back(7);
+	vec.push_back(7);
+
+	std::cout << "vector: ";
+	for (int i = 0; i < vec.size(); ++i)
+		std::cout << vec[i] << " ";
+	std::cout << std::endl;
+	
+	vec.insert(vec.begin(), 1);
+	vec.insert(vec.begin() + 2, 2);
+	std::cout << "insert" << std::endl;
+
+	std::cout << "vector: ";
+	for (int i = 0; i < vec.size(); ++i)
+		std::cout << vec[i] << " ";
+	std::cout << std::endl;
+	
+	std::cout << std::endl;
+
+	}
+	
 	return (0);
 }
