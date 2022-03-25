@@ -117,12 +117,11 @@ int main() {
 	vec.push_back(7);
 	vec.push_back(7);
 	vec.push_back(7);
-	vec.push_back(7);
 
 	std::cout << "vector: ";
 	for (int i = 0; i < vec.size(); ++i)
 		std::cout << vec[i] << " ";
-	std::cout << std::endl;
+	std::cout << " size = " << vec.size() << " capacity = " << vec.capacity() << std::endl;
 	
 	vec.insert(vec.begin(), 1);
 	vec.insert(vec.begin() + 2, 2);
@@ -131,7 +130,15 @@ int main() {
 	std::cout << "vector: ";
 	for (int i = 0; i < vec.size(); ++i)
 		std::cout << vec[i] << " ";
-	std::cout << std::endl;
+	std::cout << " size = " << vec.size() << " capacity = " << vec.capacity() << std::endl;
+	
+	vec.insert(vec.begin() + 2, 10, 2);
+	std::cout << "insert" << std::endl;
+
+	std::cout << "vector: ";
+	for (int i = 0; i < vec.size(); ++i)
+		std::cout << vec[i] << " ";
+	std::cout << " size = " << vec.size() << " capacity = " << vec.capacity() << std::endl;
 	
 	std::cout << std::endl;
 

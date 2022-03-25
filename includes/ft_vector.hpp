@@ -96,16 +96,18 @@ namespace ft {
 
 		public:
 
-					/***     ****     ****
-					** member functions **
-					****     ****     ***/
+				/***     ****     ****
+				** member functions **
+				****     ****     ***/
 
-			/***          ****
-			** constructors **
-			****          ***/
+				// constructors
+				// destructors
+				// operator =
+				// assign
+				// get_allocator
 
 			explicit vector(const Allocator& alloc = Allocator())
-			:	p(NULL), _size(0), _capacity(0), alloc(alloc) {}
+				:	p(NULL), _size(0), _capacity(0), alloc(alloc) {}
 
 			explicit vector(size_type count,
 				const T& value = T(),
@@ -134,18 +136,10 @@ namespace ft {
 				allocVector(other.begin());
 			}
 
-			/***        ****
-			** destructor **
-			****        ***/
-
 			~vector() {
 
 				destroyVector();
 			}
-
-			/***      ****
-			** operator **
-			****      ***/
 
 			vector& operator = (const vector& other) {
 
@@ -157,10 +151,6 @@ namespace ft {
 				_size = _capacity;
 				allocVector(other.begin());
 			}
-
-			/***    ****
-			** assign **
-			****    ***/
 
 			void assign(size_type count, const T& value) {
 
@@ -211,23 +201,21 @@ namespace ft {
 				}
 			}
 
-			/***           ****
-			** get_allocator **
-			****           ***/
-
 			allocator_type get_allocator() const { 
 				
 				allocator_type allocator;
 				return allocator;
 			}
 
-					/***    ****    ****
-					** element access **
-					****    ****    ***/
+				/***    ****    ****
+				** element access **
+				****    ****    ***/
 
-			/***  ****
-			**  at  **
-			****  ***/
+				// at
+				// operator[]
+				// front
+				// back
+				// data
 
 			reference at(size_type pos) {
 
@@ -243,91 +231,54 @@ namespace ft {
 				return (p[pos]);
 			}
 
-			/***        ****
-			** operator = **
-			****        ***/
-
 			reference operator[] (size_type pos) { return p[pos]; }
 			const_reference operator[] (size_type pos) const { return p[pos]; }
 
-			/***   ****
-			** front **
-			****   ***/
-
 			reference front() { return p[0]; }
 			const_reference front() const { return p[0]; }
-			
-			/***  ****
-			** back **
-			****  ***/
 
 			reference back() { return p[_size - 1]; }
 			const_reference back() const { return p[_size - 1]; }
 
-			/***  ****
-			** data **
-			****  ***/
-
 			T* data() { return p ? p : NULL; }
 			const T* data() const { return p ? p : NULL; }
 
-					/***  ***  ****
-					** iterators **
-					****  ***  ***/
-			
-			/***   ****
-			** begin **
-			****   ***/
+				/***  ***  ****
+				** iterators **
+				****  ***  ***/
+
+				// begin
+				// end
+				// rbegin
+				// rend
 
 			iterator begin() { return iterator(p); }
 			const_iterator begin() const { return iterator(p); }
-			
-			/***   ****
-			**  end  **
-			****   ***/
 
 			iterator end() { return iterator(p + _size); }
 			const_iterator end() const { return iterator(p + _size); }
 
-			/***    ****
-			** rbegin **
-			****    ***/
-
 			iterator rbegin() { return reverse_iterator(p); }
 			const_iterator rbegin() const { return reverse_iterator(p); }
-			
-			/***    ****
-			**  rend  **
-			****    ***/
 
 			reverse_iterator rend() { return reverse_iterator(p + _size); }
 			const_reverse_iterator rend() const { return reverse_iterator(p + _size); }
 					
-					/***    ****    ****
-					** element access **
-					****    ****    ***/
-			
-			/***   ****
-			** empty **
-			****   ***/
+				/***    ****    ****
+				** element access **
+				****    ****    ***/
+
+				// empty
+				// size
+				// max_size
+				// reserve
+				// capacity
 
 			bool empty() const { return _size ? false : true; }
 
-			/***  ****
-			** size **
-			****  ***/
-
 			size_type size() const { return _size; }
-			
-			/***      ****
-			** max_size **
-			****      ***/
 
 			size_type max_size() const { return std::numeric_limits<difference_type>::max(); }
-
-			/***     ****
-			** reserve **
-			****     ***/
 
 			void reserve(size_type new_cap) {
 
@@ -341,19 +292,19 @@ namespace ft {
 				}
 			}
 
-			/***      ****
-			** capacity **
-			****      ***/
-
 			size_type capacity() const { return _capacity; }
 					
-					/***  ***  ****
-					** modifiers **
-					****  ***  ***/
+				/***  ***  ****
+				** modifiers **
+				****  ***  ***/
 
-			/***   ****
-			** clear **
-			****   ***/
+				// clean
+				// insert
+				// erase
+				// push_back
+				// pop_back
+				// resize
+				// swap
 
 			void clear() {
 
@@ -361,16 +312,93 @@ namespace ft {
 					alloc.destroy(p + _size - 1);
 			}
 
-			/***    ****
-			** insert **
-			****    ***/
-
 			iterator insert(iterator pos, const T& value) {
 
-				
+				if (_size == _capacity) {
+
+					_capacity *= 2;
+					pointer tmp = alloc.allocate(_capacity);
+					alloc.construct(tmp + _size, p[_size - 1]);
+					size_type i = _size - 1;
+					for (iterator it = end() - 2; it > pos; --it, --i)
+						alloc.construct(tmp + i, *it);
+					alloc.construct(tmp + i, value);
+					for (; i >= 0; --i)
+						alloc.construct(tmp + i, p[i]);
+					destroyVector();
+					p = tmp;
+				}
+				else {
+
+					p[_size] = p[_size - 1];
+					size_type i = _size - 1;
+					for (iterator it = end() - 2; it > pos; --it, --i)
+						p[i] = *it;
+					p[i] = value;
+				}		
 			}
 
+			void insert(iterator pos, size_type count, const T& value) {
 
+				if (_size + count >= _capacity) {
+					
+					while (_size + count >= _capacity)
+						_capacity *= 2;
+					pointer tmp = alloc.allocate(_capacity);
+					alloc.construct(tmp + _size + count, p[_size - 1]);
+					size_type i = _size + count - 1;
+					for (iterator it = end() - 2; it > pos; --it, --i)
+						alloc.construct(tmp + i, *it);
+					for (; count; --count, --i)
+						alloc.construct(tmp + i, value);
+					for (; i >= 0; --i)
+						alloc.construct(tmp + i, p[i]);
+					destroyVector();
+					p = tmp;
+				}
+				else {
+
+					p[_size + count] = p[_size - 1];
+					size_type i = _size + count - 1;
+					for (iterator it = end() - 2; it > pos; --it, --i)
+						p[i] = *it;
+					for (; count; --count, --i)
+						p[i] = value;
+				}		
+			}
+
+			template <class InputIt, typename ft::enable_if<!ft::is_integral<InputIt>::value_type>::type* = 0>
+			void insert(iterator pos, InputIt first, InputIt last) {
+
+				size_type count = 0;
+				for (InputIt it = first; it != last; ++it, ++count);
+				if (_size + count >= _capacity) {
+
+					while (_size + count >= _capacity)
+						_capacity *= 2;
+					pointer tmp = alloc.allocate(_capacity);
+					size_type i = _size + count - 1;
+					for (iterator it = end() - 2; it > pos; --it, --i)
+						alloc.construct(tmp + i, *it);
+					last--;
+					for (; last != first - 1; --last, --i)
+						alloc.construct(tmp + i, *last);
+					for (; i >= 0; --i)
+						alloc.construct(tmp + i, p[i]);
+					destroyVector();
+					p = tmp;
+				}
+				else {
+
+					size_type i = _size + count - 1;
+					for (iterator it = end() - 2; it > pos; --it, --i)
+						p[i] = *it;
+					last--;
+					for (; last != first - 1; --last, --i)
+						p[i] = *last;					
+				}
+			}
+ 
 	};
 
 }
