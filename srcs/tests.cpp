@@ -5,11 +5,36 @@
 #include <algorithm>
 #include "ft_vector.hpp"
 
+using std::cout;
+using std::endl;
+
+template <class T>
+void printVector(std::vector<T> vec) {
+
+	cout << "vector: ";
+	typename std::vector<T>::iterator it_begin = vec.begin();
+	typename std::vector<T>::iterator it_end = vec.end();
+	for (; it_begin != it_end; ++it_begin)
+		cout << *it_begin << " ";
+	cout << endl;
+}
+
+template <class T>
+void printVector(std::vector<T> vec, int i) {
+
+	cout << "vector" << i << ": ";
+	typename std::vector<T>::iterator it_begin = vec.begin();
+	typename std::vector<T>::iterator it_end = vec.end();
+	for (; it_begin != it_end; ++it_begin)
+		cout << *it_begin << " ";
+	cout << endl;
+}
+
 int main() {
 
 	{ //copy constructor
 
-	std::cout << "COPY CONSTRUCTOR" << std::endl << std::endl;
+	cout << "COPY CONSTRUCTOR" << endl << endl;
 	std::vector<int> vec;
 	vec.push_back(7);
 	vec.push_back(7);
@@ -20,27 +45,21 @@ int main() {
 	std::vector<int>::iterator it_begin2 = vec2.begin();
 	std::vector<int>::iterator it_end2 = vec2.end();
 
-	std::cout << "Copied." << std::endl;
-	std::cout << "vector1 capasity: " << vec.capacity() << std::endl;
-	std::cout << "vector2 capasity: " << vec2.capacity() << std::endl;
-	std::cout << std::endl;
+	cout << "Copied." << endl;
+	cout << "vector1 capasity: " << vec.capacity() << endl;
+	cout << "vector2 capasity: " << vec2.capacity() << endl;
+	cout << endl;
 
-	std::cout << "vector1: ";
-	for (; it_begin != it_end; ++it_begin)
-		std::cout << *it_begin << " ";
-	std::cout << std::endl;
+	printVector(vec, 1);
+	printVector(vec2, 2);
 
-	std::cout << "vector2: ";
-	for (; it_begin2 != it_end2; ++it_begin2)
-		std::cout << *it_begin2 << " ";
-	std::cout << std::endl;
-	std::cout << std::endl;
+	cout << endl;
 	
 	}
 
 	{ //operator =
 
-	std::cout << "OPERATOR =" << std::endl << std::endl;
+	cout << "OPERATOR =" << endl << endl;
 	std::vector<int> vec;
 	vec.push_back(7);
 	vec.push_back(7);
@@ -52,27 +71,21 @@ int main() {
 	std::vector<int>::iterator it_begin2 = vec2.begin();
 	std::vector<int>::iterator it_end2 = vec2.end();
 
-	std::cout << " =" << std::endl;
-	std::cout << "vector1 capasity: " << vec.capacity() << std::endl;
-	std::cout << "vector2 capasity: " << vec2.capacity() << std::endl;
-	std::cout << std::endl;
+	cout << " =" << endl;
+	cout << "vector1 capasity: " << vec.capacity() << endl;
+	cout << "vector2 capasity: " << vec2.capacity() << endl;
+	cout << endl;
 
-	std::cout << "vector1: ";
-	for (; it_begin != it_end; ++it_begin)
-		std::cout << *it_begin << " ";
-	std::cout << std::endl;
+	printVector(vec, 1);
+	printVector(vec2, 2);
 
-	std::cout << "vector2: ";
-	for (; it_begin2 != it_end2; ++it_begin2)
-		std::cout << *it_begin2 << " ";
-	std::cout << std::endl;
-	std::cout << std::endl;
+	cout << endl;
 
 	}
 
 	{ //at
 	
-	std::cout << "AT" << std::endl << std::endl;
+	cout << "AT" << endl << endl;
 
 	std::vector<int> vec;
 	vec.push_back(7);
@@ -80,19 +93,19 @@ int main() {
 	vec.push_back(7);
 	try {
 		for (int i = 0; i < 10; ++i)
-			std::cout << vec.at(i) << " ";
-		std::cout << std::endl;
+			cout << vec.at(i) << " ";
+		cout << endl;
 	}
 	catch (const std::exception& e) {
-		std::cerr << std::endl << e.what() << std::endl;
+		std::cerr << endl << e.what() << endl;
 	}
-	std::cout << std::endl;
+	cout << endl;
 
 	}
 
 	{ //clear
 	
-	std::cout << "CLEAR" << std::endl << std::endl;
+	cout << "CLEAR" << endl << endl;
 
 	std::vector<int> vec;
 	vec.push_back(7);
@@ -100,17 +113,17 @@ int main() {
 	vec.push_back(7);
 	vec.push_back(7);
 	vec.push_back(7);
-	std::cout << "size = " << vec.size() << ", capacity = " << vec.capacity() << std::endl;
+	cout << "size = " << vec.size() << ", capacity = " << vec.capacity() << endl;
 	vec.clear();
-	std::cout << "clear" << std::endl;
-	std::cout << "size = " << vec.size() << ", capacity = " << vec.capacity() << std::endl;
-	std::cout << std::endl;
+	cout << "clear" << endl;
+	cout << "size = " << vec.size() << ", capacity = " << vec.capacity() << endl;
+	cout << endl;
 
 	}
 
 	{ //insert
 	
-	std::cout << "INSERT" << std::endl << std::endl;
+	cout << "INSERT" << endl << endl;
 
 	std::vector<int> vec;
 	vec.push_back(7);
@@ -118,29 +131,50 @@ int main() {
 	vec.push_back(7);
 	vec.push_back(7);
 
-	std::cout << "vector: ";
-	for (int i = 0; i < vec.size(); ++i)
-		std::cout << vec[i] << " ";
-	std::cout << " size = " << vec.size() << " capacity = " << vec.capacity() << std::endl;
+	printVector(vec);
 	
 	vec.insert(vec.begin(), 1);
 	vec.insert(vec.begin() + 2, 2);
-	std::cout << "insert" << std::endl;
+	cout << "insert" << endl;
 
-	std::cout << "vector: ";
-	for (int i = 0; i < vec.size(); ++i)
-		std::cout << vec[i] << " ";
-	std::cout << " size = " << vec.size() << " capacity = " << vec.capacity() << std::endl;
-	
+	printVector(vec);
+
 	vec.insert(vec.begin() + 2, 10, 2);
-	std::cout << "insert" << std::endl;
+	cout << "insert" << endl;
 
-	std::cout << "vector: ";
+	printVector(vec);
+
+	cout << endl;
+
+	}
+
+	{
+
+	cout << "FT_VECTOR" << endl << endl;
+	ft::vector<int> vec(20, 20);
+
+	cout << "vector: ";
 	for (int i = 0; i < vec.size(); ++i)
-		std::cout << vec[i] << " ";
-	std::cout << " size = " << vec.size() << " capacity = " << vec.capacity() << std::endl;
-	
-	std::cout << std::endl;
+		cout << vec[i] << " ";
+	cout << " size = " << vec.size() << " capacity = " << vec.capacity() << endl;
+
+	vec.push_back(3);
+	cout << "push_back" << endl;
+
+	cout << "vector: ";
+	for (int i = 0; i < vec.size(); ++i)
+		cout << vec[i] << " ";
+	cout << " size = " << vec.size() << " capacity = " << vec.capacity() << endl;
+
+	// vec.insert();
+	// cout << "insert" << endl;
+
+	cout << "vector: ";
+	for (int i = 0; i < vec.size(); ++i)
+		cout << vec[i] << " ";
+	cout << " size = " << vec.size() << " capacity = " << vec.capacity() << endl;
+
+	cout << endl;
 
 	}
 	
