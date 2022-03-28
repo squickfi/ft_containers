@@ -10,11 +10,11 @@ namespace ft {
 	template <class Iter>
 	struct iterator_traits {
 
-		typedef Iter::value_type				value_type;
-		typedef Iter::difference_type			difference_type;
-		typedef Iter::pointer					pointer;
-		typedef Iter::reference					reference;
-		typedef Iter::iterator_category			iterator_category;
+		typedef typename Iter::value_type				value_type;
+		typedef typename Iter::difference_type			difference_type;
+		typedef typename Iter::pointer					pointer;
+		typedef typename Iter::reference				reference;
+		typedef typename Iter::iterator_category		iterator_category;
 	};
 
 	template <class T>
@@ -37,34 +37,20 @@ namespace ft {
 		typedef std::random_access_iterator_tag	iterator_category;
 	};
 
-	/*************
-	** iterator **
-	*************/
-
-	template <class _value_type, class _difference_type, class _pointer,
-				class _reference, class _iterator_category>
-	struct iterator {
-
-		typedef _value_type					value_type;
-		typedef _difference_type			difference_type;
-		typedef _pointer					pointer;
-		typedef _reference					reference;
-		typedef _iterator_category			iterator_category;
-	};
-
 	/*********************
 	** reverse_iterator **
 	*********************/
 
 	template <class Iter>
-	class reverse_iterator : public iterator <iterator_traits<Iter>::value_type,
-											iterator_traits<Iter>::difference_type,
-											iterator_traits<Iter>::pointer,
-											iterator_traits<Iter>::reference,
-											iterator_traits<Iter>::iterator_category,> {
+	class reverse_iterator {
 
 		public:
 			typedef Iter iterator_type;
+			typedef typename iterator_traits<Iter>::value_type				value_type;
+			typedef typename iterator_traits<Iter>::difference_type			difference_type;
+			typedef typename iterator_traits<Iter>::pointer					pointer;
+			typedef typename iterator_traits<Iter>::reference				reference;
+			typedef typename iterator_traits<Iter>::iterator_category		iterator_category;
 
 		protected:
 			iterator_type current;

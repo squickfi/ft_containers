@@ -7,15 +7,16 @@
 namespace ft {
 
 	template <class T>
-	class VectorIterator : public ft::iterator <iterator_traits<T>::value_type,
-								iterator_traits<T>::difference_type,
-								iterator_traits<T>::pointer,
-								iterator_traits<T>::reference,
-								iterator_traits<T>::iterator_category> {
+	class VectorIterator {
 
 		public:
 
-			typedef T value_type;
+			typedef typename ft::iterator_traits<T *>::value_type 			value_type;
+			typedef typename ft::iterator_traits<T *>::reference 			reference;
+			typedef typename ft::iterator_traits<T *>::pointer				pointer;
+			typedef typename ft::iterator_traits<T *>::difference_type		difference_type;
+			typedef typename ft::iterator_traits<T *>::iterator_category	iterator_category;
+			typedef typename ft::iterator_traits<T *>::pointer				iterator_type;
 
 		private:
 
@@ -31,6 +32,10 @@ namespace ft {
 
 				p = other.p;
 				return *this;
+			}
+
+			VectorIterator& operator += (difference_type n) {
+
 			}
 
 	};
@@ -64,7 +69,7 @@ namespace ft {
 
 			typedef T									value_type;
    			typedef Allocator							allocator_type;
-			typedef std::size_t						size_type;
+			typedef std::size_t							size_type;
 			typedef std::ptrdiff_t						difference_type;
 			typedef value_type&							reference;
 			typedef const value_type&					const_reference;

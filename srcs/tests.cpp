@@ -148,7 +148,32 @@ int main() {
 
 	}
 
-	{
+	{ //iterator
+	
+	cout << "ITERATORS" << endl << endl;
+
+	std::vector<int> vec;
+	vec.push_back(0);
+	vec.push_back(1);
+	vec.push_back(2);
+	vec.push_back(3);
+
+	printVector(vec);
+	
+	std::vector<int>::iterator it = vec.begin();
+	cout << "begin: " << *it << endl;
+	it += 2;
+	cout << "begin += 2: " << *it << endl;
+	it += 8;
+	cout << "begin += 8: " << *it << endl;
+	it += 1;
+	cout << "begin += 1: " << *it << endl;
+
+	cout << endl;
+
+	}
+
+	{ //FT
 
 	cout << "FT_VECTOR" << endl << endl;
 	ft::vector<int> vec(20, 20);
