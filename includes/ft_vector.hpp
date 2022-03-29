@@ -354,7 +354,7 @@ namespace ft {
 					alloc.destroy(p + _size - 1);
 			}
 
-			// TO DO: insert
+			// TO DO: SFINAE
 
 			iterator insert(iterator pos, const T& value) {
 
@@ -394,19 +394,22 @@ namespace ft {
 					while (_size + count > _capacity)
 						_capacity *= 2;
 					pointer tmp = alloc.allocate(_capacity);
-					size_type i = _size + count - 1;;
-					for (iterator it = end() + count - 1; it != pos + count; --i, --it)
+					size_type i = _size + count - 1;
+					iterator stopCopying = pos + count;
+					for (iterator it = end() + count - 1; it != stopCopying; --i, --it)
 						alloc.construct(tmp + i, *(p + i - count));
 					for (; count; --i, --count)
 						alloc.construct(tmp + i, value);
 					for (; i; --i)
-						alloc.construct(tmp + i, *(p + i - count));
+						alloc.construct(tmp + i, *(p + i));
+					alloc.construct(tmp, *p);
 					destroyVector();
 					p = tmp;
 				}
 				else {
 					size_type i = _size + count - 1;
-					for (iterator it = end() + count - 1; it != pos + count; --i, --it) {
+					iterator stopCopying = pos + count;
+					for (iterator it = end() + count - 1; it != stopCopying; --i, --it) {
 
 						if (i < _size)
 							alloc.destroy(p + i);
@@ -422,7 +425,54 @@ namespace ft {
 				_size += _count;
 			}
 
+			template <class InputIt, typename ft::enable_if<!ft::is_integral<InputIt>::value_type>::type* = 0>
+			void insert(iterator pos, InputIt first, InputIt last) {
+
+				size_type count = 0;
+				for (InputIt counter = first; counter != last; ++counter, ++count);
+				if (_size + count > _capacity) {
+
+					while (_size + count > _capacity)
+						_capacity *= 2;
+					pointer tmp = alloc.allocate(_capacity);
+					size_type i = _size + count - 1;
+					iterator stopCopying = pos + count;
+					for (iterator it = end() + count - 1; it != stopCopying; --i, --it)
+						alloc.construct(tmp + i, *(p + i - count));
+					for (InputIt copier = last - 1; copier >= first; --copier, --i)
+						alloc.construct(tmp + i, *copier);
+					for (; i; --i)
+						alloc.construct(tmp + i, *(p + i));
+					alloc.construct(tmp, *p);
+					destroyVector();
+					p = tmp;											
+				}
+				else {
+
+					size_type i = _size + count - 1;
+					iterator stopCopying = pos + count;
+					for (iterator it = end() + count - 1; it != stopCopying; --i, --it) {
+
+						if (i < _size)
+							alloc.destroy(p + i);
+						alloc.construct(p + i, *(p + i - count));
+					}
+					for (InputIt copier = last - 1; copier >= first; --copier, --i) {
+
+						if (i < _size)
+							alloc.destroy(p + i);
+						alloc.construct(p + i, *copier);
+					}
+				}
+				_size += count;
+			}
+
 			// TO DO: erase
+
+			iterator erase (iterator pos) {
+
+				
+			}
 
 			void push_back(const T& value) {
 

@@ -176,7 +176,7 @@ int main() {
 	{ //FT
 
 	cout << "FT_VECTOR" << endl << endl;
-	ft::vector<int> vec(20, 20);
+	ft::vector<int> vec(20, 1);
 
 	cout << "vector: ";
 	for (int i = 0; i < vec.size(); ++i)
@@ -196,13 +196,15 @@ int main() {
 	it += 5;
 	vec.insert(it, 3, 19);
 	it += 5;
-	cout << *it << endl;
-	cout << "vector: ";
-	for (int i = 0; i < vec.size(); ++i)
-		cout << vec[i] << " ";
-	cout << " size = " << vec.size() << " capacity = " << vec.capacity() << endl;
 	vec.insert(it, 16, 11);
-	// cout << "insert" << endl;
+
+	ft::vector<int> vec2;
+	vec2.push_back(8);
+	vec2.push_back(8);
+	vec2.push_back(8);
+	// vec.insert(it, vec2.begin(), vec2.end());
+
+	cout << "insert" << endl;
 
 	cout << "vector: ";
 	for (int i = 0; i < vec.size(); ++i)

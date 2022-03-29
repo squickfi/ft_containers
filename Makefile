@@ -26,3 +26,5 @@ re: clean all
 reclean: re clean
 
 .PHONY: all clean fclean re reclean
+
+include $(wildcard $(DEP))
