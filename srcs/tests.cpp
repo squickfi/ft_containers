@@ -9,25 +9,25 @@ using std::cout;
 using std::endl;
 
 template <class T>
-void printVector(std::vector<T> vec) {
+void printVector(std::vector<T> &vec) {
 
 	cout << "vector: ";
 	typename std::vector<T>::iterator it_begin = vec.begin();
 	typename std::vector<T>::iterator it_end = vec.end();
 	for (; it_begin != it_end; ++it_begin)
 		cout << *it_begin << " ";
-	cout << endl;
+	cout << "size = " << vec.size() << " capacity = " << vec.capacity() << endl;
 }
 
 template <class T>
-void printVector(std::vector<T> vec, int i) {
+void printVector(std::vector<T> &vec, int i) {
 
 	cout << "vector" << i << ": ";
 	typename std::vector<T>::iterator it_begin = vec.begin();
 	typename std::vector<T>::iterator it_end = vec.end();
 	for (; it_begin != it_end; ++it_begin)
 		cout << *it_begin << " ";
-	cout << endl;
+	cout << "size = " << vec.size() << " capacity = " << vec.capacity() << endl;
 }
 
 int main() {
@@ -166,8 +166,8 @@ int main() {
 	cout << "begin += 2: " << *it << endl;
 	it += 8;
 	cout << "begin += 8: " << *it << endl;
-	it += 1;
-	cout << "begin += 1: " << *it << endl;
+	it -= 8;
+	cout << "begin -= 8: " << *it << endl;
 
 	cout << endl;
 
@@ -191,7 +191,17 @@ int main() {
 		cout << vec[i] << " ";
 	cout << " size = " << vec.size() << " capacity = " << vec.capacity() << endl;
 
-	// vec.insert();
+	ft::vector<int>::iterator it = vec.begin() + 2;
+	vec.insert(it, 83);
+	it += 5;
+	vec.insert(it, 3, 19);
+	it += 5;
+	cout << *it << endl;
+	cout << "vector: ";
+	for (int i = 0; i < vec.size(); ++i)
+		cout << vec[i] << " ";
+	cout << " size = " << vec.size() << " capacity = " << vec.capacity() << endl;
+	vec.insert(it, 16, 11);
 	// cout << "insert" << endl;
 
 	cout << "vector: ";

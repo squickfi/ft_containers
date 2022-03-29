@@ -34,29 +34,36 @@ namespace ft {
 				return *this;
 			}
 
-			VectorIterator& operator += (difference_type n) {
+			reference operator * () { return *p; }
+			pointer operator -> () { return &p; }
+			reference operator [] (difference_type n) { return *(p + n); }
 
-			}
+			bool operator == (const VectorIterator& other) { return p == other.p; }
+			bool operator != (const VectorIterator& other) { return p != other.p; }
+			bool operator > (const VectorIterator& other) { return p > other.p; }
+			bool operator >= (const VectorIterator& other) { return p >= other.p; }
+			bool operator < (const VectorIterator& other) { return p < other.p; }
+			bool operator <= (const VectorIterator& other) { return p <= other.p; }
+
+			VectorIterator& operator += (difference_type n) { p += n; return *this; }
+			VectorIterator& operator -= (difference_type n) { p -= n; return *this; }
+			VectorIterator operator + (difference_type n) { VectorIterator tmp(p); tmp += n; return tmp; }
+			VectorIterator operator - (difference_type n) { return p - n; }
+			VectorIterator& operator ++ () { ++p; return *this; }
+			VectorIterator operator ++ (int) { VectorIterator tmp(*this); ++p; return tmp; }
+			VectorIterator& operator -- () { --p; return *this; }
+			VectorIterator operator -- (int) { VectorIterator tmp(*this); --p; return tmp; }
 
 	};
 
 	template <class T>
-	class ConstVectorIterator {
-
-
-	};
+	class ConstVectorIterator : public VectorIterator<T> {};
 
 	template <class T>
-	class ReverseVectorIterator {
-
-
-	};
+	class ReverseVectorIterator : public reverse_iterator<VectorIterator<T> > {};
 
 	template <class T>
-	class ConstReverseVectorIterator {
-
-
-	};
+	class ConstReverseVectorIterator : public ReverseVectorIterator<T> {};
 
 	/***********
 	** vector **
@@ -371,12 +378,48 @@ namespace ft {
 					for (iterator it = end(); it > pos; --it) {
 						alloc.construct(p + i, p[i - 1]);
 						--i;
-						alloc.destruct(p + i);
+						alloc.destroy(p + i);
 					}
 					alloc.construct(p + i, value);
 				}
 				++_size;
 				return pos;
+			}
+
+			void insert( iterator pos, size_type count, const T& value ) {
+
+				size_type _count = count;
+				if (_size + count > _capacity) {
+
+					while (_size + count > _capacity)
+						_capacity *= 2;
+					pointer tmp = alloc.allocate(_capacity);
+					size_type i = _size + count - 1;;
+					for (iterator it = end() + count - 1; it != pos + count; --i, --it)
+						alloc.construct(tmp + i, *(p + i - count));
+					for (; count; --i, --count)
+						alloc.construct(tmp + i, value);
+					for (; i; --i)
+						alloc.construct(tmp + i, *(p + i - count));
+					destroyVector();
+					p = tmp;
+				}
+				else {
+					size_type i = _size + count - 1;
+					for (iterator it = end() + count - 1; it != pos + count; --i, --it) {
+
+						if (i < _size)
+							alloc.destroy(p + i);
+						alloc.construct(p + i, *(p + i - count));
+					}
+					for (; count; --i, --count) {
+
+						if (i < _size)
+							alloc.destroy(p + i);
+						alloc.construct(p + i, value);
+					}
+				}
+				_size += _count;
 			}
 
 			// TO DO: erase
@@ -396,99 +439,6 @@ namespace ft {
 				++_size;
 			}
 
-
-
-
-
-			// iterator insert(iterator pos, const T& value) {
-
-			// 	if (_size == _capacity) {
-
-			// 		_capacity *= 2;
-			// 		pointer tmp = alloc.allocate(_capacity);
-			// 		alloc.construct(tmp + _size, p[_size - 1]);
-			// 		size_type i = _size - 1;
-			// 		for (iterator it = end() - 2; it > pos; --it, --i)
-			// 			alloc.construct(tmp + i, *it);
-			// 		alloc.construct(tmp + i, value);
-			// 		for (; i >= 0; --i)
-			// 			alloc.construct(tmp + i, p[i]);
-			// 		destroyVector();
-			// 		p = tmp;
-			// 	}
-			// 	else {
-
-			// 		alloc.construct(p + _size, p + _size - 1)
-			// 		size_type i = _size - 1;
-			// 		for (iterator it = end() - 2; it > pos; --it, --i)
-			// 			p[i] = *it;
-			// 		p[i] = value;
-			// 	}		
-			// }
-
-			// void insert(iterator pos, size_type count, const T& value) {
-
-			// 	if (_size + count >= _capacity) {
-					
-			// 		while (_size + count >= _capacity)
-			// 			_capacity *= 2;
-			// 		pointer tmp = alloc.allocate(_capacity);
-			// 		alloc.construct(tmp + _size + count, p[_size - 1]);
-			// 		size_type i = _size + count - 1;
-			// 		for (iterator it = end() - 2; it > pos; --it, --i)
-			// 			alloc.construct(tmp + i, *it);
-			// 		for (; count; --count, --i)
-			// 			alloc.construct(tmp + i, value);
-			// 		for (; i >= 0; --i)
-			// 			alloc.construct(tmp + i, p[i]);
-			// 		destroyVector();
-			// 		p = tmp;
-			// 	}
-			// 	else {
-
-			// 		for (size_type i = count, size_type j = 1; i; --i, ++j)
-			// 			alloc.construct(p + _size + i - 1, p + _size - j);
-			// 		// p[_size + count] = p[_size - 1];
-			// 		size_type i = _size + count - 1;
-			// 		for (iterator it = end() - count; it > pos; --it, --i)
-			// 			p[i] = *it;
-			// 		for (; count; --count, --i)
-			// 			p[i] = value;
-			// 	}		
-			// }
-
-			// template <class InputIt, typename ft::enable_if<!ft::is_integral<InputIt>::value_type>::type* = 0>
-			// void insert(iterator pos, InputIt first, InputIt last) {
-
-			// 	size_type count = 0;
-			// 	for (InputIt it = first; it != last; ++it, ++count);
-			// 	if (_size + count >= _capacity) {
-
-			// 		while (_size + count >= _capacity)
-			// 			_capacity *= 2;
-			// 		pointer tmp = alloc.allocate(_capacity);
-			// 		size_type i = _size + count - 1;
-			// 		for (iterator it = end() - 2; it > pos; --it, --i)
-			// 			alloc.construct(tmp + i, *it);
-			// 		last--;
-			// 		for (; last != first - 1; --last, --i)
-			// 			alloc.construct(tmp + i, *last);
-			// 		for (; i >= 0; --i)
-			// 			alloc.construct(tmp + i, p[i]);
-			// 		destroyVector();
-			// 		p = tmp;
-			// 	}
-			// 	else {
-
-			// 		size_type i = _size + count - 1;
-			// 		for (iterator it = end() - 2; it > pos; --it, --i)
-			// 			p[i] = *it;
-			// 		last--;
-			// 		for (; last != first - 1; --last, --i)
-			// 			p[i] = *last;					
-			// 	}
-			// }
- 
 	};
 
 }
