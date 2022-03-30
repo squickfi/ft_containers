@@ -154,8 +154,8 @@ namespace ft {
 			}
 
 			template <class InputIt>
-			vector(InputIt first, InputIt last, const Allocator& alloc = Allocator(), 
-					typename ft::enable_if<!ft::is_integral<InputIt>::value_type>::type* = 0)
+			vector(InputIt first, typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type last,
+				const Allocator& alloc = Allocator())
 					:	alloc(alloc) {
 					
 					for (InputIt i = first; i != last; ++i, ++_capacity);
@@ -211,8 +211,8 @@ namespace ft {
 				}
 			}
 
-			template<class InputIt, typename ft::enable_if<!ft::is_integral<InputIt>::value_type>::type* = 0>
-			void assign(InputIt first, InputIt last) {
+			template<class InputIt>
+			void assign(InputIt first, typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type last) {
 
 				size_type count = 0;
 				for (InputIt it = first; it != last; ++it, ++count);
@@ -354,8 +354,6 @@ namespace ft {
 					alloc.destroy(p + _size - 1);
 			}
 
-			// TO DO: SFINAE
-
 			iterator insert(iterator pos, const T& value) {
 
 				if (_size == _capacity) {
@@ -414,6 +412,7 @@ namespace ft {
 						if (i < _size)
 							alloc.destroy(p + i);
 						alloc.construct(p + i, *(p + i - count));
+						std::cout << *it << " ";
 					}
 					for (; count; --i, --count) {
 
@@ -425,9 +424,11 @@ namespace ft {
 				_size += _count;
 			}
 
-			template <class InputIt, typename ft::enable_if<!ft::is_integral<InputIt>::value_type>::type* = 0>
-			void insert(iterator pos, InputIt first, InputIt last) {
+			template <class InputIt>
+			void insert(iterator pos, typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type first,
+				InputIt last) {
 
+				std::cout << *first << " " << *(last - 1) << std::endl;
 				size_type count = 0;
 				for (InputIt counter = first; counter != last; ++counter, ++count);
 				if (_size + count > _capacity) {

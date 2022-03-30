@@ -8,6 +8,13 @@
 using std::cout;
 using std::endl;
 
+struct A {
+
+	public:
+
+		void printS(std::string& s) { cout << s << endl; }
+};
+
 template <class T>
 void printVector(std::vector<T> &vec) {
 
@@ -31,7 +38,6 @@ void printVector(std::vector<T> &vec, int i) {
 }
 
 int main() {
-
 	{ //copy constructor
 
 	cout << "COPY CONSTRUCTOR" << endl << endl;
@@ -200,9 +206,14 @@ int main() {
 
 	ft::vector<int> vec2;
 	vec2.push_back(8);
-	vec2.push_back(8);
-	vec2.push_back(8);
-	// vec.insert(it, vec2.begin(), vec2.end());
+	vec2.push_back(9);
+	vec2.push_back(10);
+
+	cout << "vector: ";
+	for (int i = 0; i < vec.size(); ++i)
+		cout << vec[i] << " ";
+	cout << " size = " << vec.size() << " capacity = " << vec.capacity() << endl;
+	vec.insert(it, vec2.begin(), vec2.end());
 
 	cout << "insert" << endl;
 
@@ -210,8 +221,13 @@ int main() {
 	for (int i = 0; i < vec.size(); ++i)
 		cout << vec[i] << " ";
 	cout << " size = " << vec.size() << " capacity = " << vec.capacity() << endl;
+	cout << "insert!!!" << endl;
 
 	cout << endl;
+
+	A a;
+	std::string aaa("aaaaaa");
+	a.printS(aaa);
 
 	}
 	
