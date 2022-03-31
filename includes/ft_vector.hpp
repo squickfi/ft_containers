@@ -48,7 +48,7 @@ namespace ft {
 			VectorIterator& operator += (difference_type n) { p += n; return *this; }
 			VectorIterator& operator -= (difference_type n) { p -= n; return *this; }
 			VectorIterator operator + (difference_type n) { VectorIterator tmp(p); tmp += n; return tmp; }
-			VectorIterator operator - (difference_type n) { return p - n; }
+			VectorIterator operator - (difference_type n) { VectorIterator tmp(p); tmp -= n; return tmp; }
 			VectorIterator& operator ++ () { ++p; return *this; }
 			VectorIterator operator ++ (int) { VectorIterator tmp(*this); ++p; return tmp; }
 			VectorIterator& operator -- () { --p; return *this; }
@@ -143,7 +143,7 @@ namespace ft {
 				// get_allocator
 
 			explicit vector(const Allocator& alloc = Allocator())
-				:	p(NULL), _size(0), _capacity(0), alloc(alloc) {}
+				:	_size(0), _capacity(0), alloc(alloc) {}
 
 			explicit vector(size_type count,
 				const T& value = T(),
@@ -358,7 +358,7 @@ namespace ft {
 
 				if (_size == _capacity) {
 
-					_capacity *= 2;
+					_capacity = _capacity ? _capacity * 2 : 1;
 					pointer tmp = alloc.allocate(_capacity);
 					size_type i = _size;
 					for (iterator it = end(); it > pos; --it, --i)
@@ -384,11 +384,13 @@ namespace ft {
 				return pos;
 			}
 
-			void insert( iterator pos, size_type count, const T& value ) {
+			void insert(iterator pos, size_type count, const T& value) {
 
 				size_type _count = count;
 				if (_size + count > _capacity) {
 
+					if (!_capacity)
+						++_capacity;
 					while (_size + count > _capacity)
 						_capacity *= 2;
 					pointer tmp = alloc.allocate(_capacity);
@@ -412,7 +414,7 @@ namespace ft {
 						if (i < _size)
 							alloc.destroy(p + i);
 						alloc.construct(p + i, *(p + i - count));
-						std::cout << *it << " ";
+
 					}
 					for (; count; --i, --count) {
 
@@ -428,58 +430,88 @@ namespace ft {
 			void insert(iterator pos, typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type first,
 				InputIt last) {
 
-				std::cout << *first << " " << *(last - 1) << std::endl;
 				size_type count = 0;
-				for (InputIt counter = first; counter != last; ++counter, ++count);
-				if (_size + count > _capacity) {
+				for (InputIt it = first; it != last; ++it, ++count);
 
-					while (_size + count > _capacity)
+				if (_size + count >= _capacity) {
+
+					if (!_capacity)
+						++_capacity;
+					while (_size + count >= _capacity)
 						_capacity *= 2;
 					pointer tmp = alloc.allocate(_capacity);
+
 					size_type i = _size + count - 1;
-					iterator stopCopying = pos + count;
-					for (iterator it = end() + count - 1; it != stopCopying; --i, --it)
+					iterator stopCopying = pos + count - 1;
+
+					for (iterator it = end() + count - 1; it > stopCopying; --it, --i)
 						alloc.construct(tmp + i, *(p + i - count));
-					for (InputIt copier = last - 1; copier >= first; --copier, --i)
-						alloc.construct(tmp + i, *copier);
+					for (InputIt it = last - 1; it != first - 1; --it, --i)
+						alloc.construct(tmp + i, *it);
 					for (; i; --i)
 						alloc.construct(tmp + i, *(p + i));
 					alloc.construct(tmp, *p);
 					destroyVector();
-					p = tmp;											
+					p = tmp;
 				}
 				else {
 
 					size_type i = _size + count - 1;
-					iterator stopCopying = pos + count;
-					for (iterator it = end() + count - 1; it != stopCopying; --i, --it) {
+					iterator stopCopying = pos + count - 1;
+					for (iterator it = end() + count - 1; it > stopCopying; --it, --i) {
 
 						if (i < _size)
 							alloc.destroy(p + i);
 						alloc.construct(p + i, *(p + i - count));
 					}
-					for (InputIt copier = last - 1; copier >= first; --copier, --i) {
+					for (InputIt it = last - 1; it != first - 1; --it, --i) {
 
 						if (i < _size)
 							alloc.destroy(p + i);
-						alloc.construct(p + i, *copier);
+						alloc.construct(p + i, *it);
 					}
+						
 				}
 				_size += count;
+
 			}
 
 			// TO DO: erase
 
-			iterator erase (iterator pos) {
+			iterator erase(iterator pos) {
 
-				
+				iterator erase = begin();
+				size_type count = 0;
+				for (; erase != pos; ++erase, ++count);
+				for (; count != _size - 2;) {
+
+					alloc.destroy(p + count);
+					alloc.construct(p + count, *(p + count + 1));
+				}
+				alloc.destroy(p + count + 1);
+				--_size;
+			}
+
+			iterator erase(iterator first, iterator last) {
+
+				iterator erase = begin();
+				iterator itEnd = end();
+				size_type count = 0;
+				for (; erase != first; ++erase, ++count);
+				for (; erase != last, first != itEnd; ++first, ++count) {
+
+					alloc.destroy(p + count);
+					alloc.construct(p + count, *(first + 1));
+				}
+				for (; erase != itEnd; ++erase, ++count)
+					alloc.destroy(p + count);
 			}
 
 			void push_back(const T& value) {
 
 				if (_size == _capacity) {
 
-					_capacity *= 2;
+					_capacity = _capacity ? _capacity * 2 : 1;
 					pointer tmp = alloc.allocate(_capacity);
 					for (size_type i = 0; i < _size; ++i)
 						alloc.construct(tmp + i, p[i]);
