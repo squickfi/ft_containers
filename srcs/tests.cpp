@@ -3,7 +3,7 @@
 #include <map>
 #include <type_traits>
 #include <algorithm>
-#include "ft_vector.hpp"
+#include "Vector.hpp"
 
 using std::cout;
 using std::endl;
@@ -39,10 +39,6 @@ int main() {
 	vec.push_back(7);
 	vec.push_back(7);
 	std::vector<int> vec2(vec);
-	std::vector<int>::iterator it_begin = vec.begin();
-	std::vector<int>::iterator it_end = vec.end();
-	std::vector<int>::iterator it_begin2 = vec2.begin();
-	std::vector<int>::iterator it_end2 = vec2.end();
 
 	cout << "Copied." << endl;
 	cout << "vector1 capasity: " << vec.capacity() << endl;
@@ -65,10 +61,6 @@ int main() {
 	vec.push_back(7);
 	std::vector<int> vec2;
 	vec2 = vec;
-	std::vector<int>::iterator it_begin = vec.begin();
-	std::vector<int>::iterator it_end = vec.end();
-	std::vector<int>::iterator it_begin2 = vec2.begin();
-	std::vector<int>::iterator it_end2 = vec2.end();
 
 	cout << " =" << endl;
 	cout << "vector1 capasity: " << vec.capacity() << endl;
@@ -175,10 +167,10 @@ int main() {
 	{ //FT
 
 	cout << "FT_VECTOR" << endl << endl;
-	ft::vector<int> vec(20, 1);
+	ft::Vector<int> vec(20, 1);
 
 	cout << "vector: ";
-	for (int i = 0; i < vec.size(); ++i)
+	for (ft::Vector<int>::size_type i = 0; i < vec.size(); ++i)
 		cout << vec[i] << " ";
 	cout << " size = " << vec.size() << " capacity = " << vec.capacity() << endl;
 
@@ -186,18 +178,18 @@ int main() {
 	cout << "push_back" << endl;
 
 	cout << "vector: ";
-	for (int i = 0; i < vec.size(); ++i)
+	for (ft::Vector<int>::size_type i = 0; i < vec.size(); ++i)
 		cout << vec[i] << " ";
 	cout << " size = " << vec.size() << " capacity = " << vec.capacity() << endl;
 
-	ft::vector<int>::iterator it = vec.begin() + 2;
+	ft::Vector<int>::iterator it = vec.begin() + 2;
 	vec.insert(it, 83);
 	it += 5;
 	vec.insert(it, 3, 19);
 	it += 5;
 	vec.insert(it, 16, 11);
 
-	ft::vector<int> vec2;
+	ft::Vector<int> vec2;
 	for (int i = 100; i < 150; ++i)
 		vec2.push_back(i);
 	// for (int i = 0; i < vec2.size(); ++i)
@@ -210,7 +202,7 @@ int main() {
 	it = vec.begin() + 25;
 
 	cout << "vector: ";
-	for (int i = 0; i < vec.size(); ++i)
+	for (ft::Vector<int>::size_type i = 0; i < vec.size(); ++i)
 		cout << vec[i] << " ";
 	cout << " size = " << vec.size() << " capacity = " << vec.capacity() << endl;
 	vec.insert(it, vec2.begin(), vec2.end());
@@ -218,7 +210,22 @@ int main() {
 	cout << "insert" << endl;
 
 	cout << "vector: ";
-	for (int i = 0; i < vec.size(); ++i)
+	for (ft::Vector<int>::size_type i = 0; i < vec.size(); ++i)
+		cout << vec[i] << " ";
+	cout << " size = " << vec.size() << " capacity = " << vec.capacity() << endl;
+
+	// it = vec.begin() + 30;
+	// cout << *it << endl;
+	vec.erase(vec.begin() + 30);
+	vec.erase(vec.begin() + 30, vec.begin() + 50);
+	vec.pop_back();
+	vec.pop_back();
+	vec.pop_back();
+
+	std::cout << "!!!..........!!!" << std::endl;
+
+	cout << "vector: ";
+	for (ft::Vector<int>::size_type i = 0; i < vec.size(); ++i)
 		cout << vec[i] << " ";
 	cout << " size = " << vec.size() << " capacity = " << vec.capacity() << endl;
 
