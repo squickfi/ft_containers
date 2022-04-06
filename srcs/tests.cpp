@@ -1,36 +1,7 @@
-#include <iostream>
-#include <vector>
-#include <map>
-#include <type_traits>
-#include <algorithm>
-#include "Vector.hpp"
-
-using std::cout;
-using std::endl;
-
-template <class T>
-void printVector(std::vector<T> &vec) {
-
-	cout << "vector: ";
-	typename std::vector<T>::iterator it_begin = vec.begin();
-	typename std::vector<T>::iterator it_end = vec.end();
-	for (; it_begin != it_end; ++it_begin)
-		cout << *it_begin << " ";
-	cout << "size = " << vec.size() << " capacity = " << vec.capacity() << endl;
-}
-
-template <class T>
-void printVector(std::vector<T> &vec, int i) {
-
-	cout << "vector" << i << ": ";
-	typename std::vector<T>::iterator it_begin = vec.begin();
-	typename std::vector<T>::iterator it_end = vec.end();
-	for (; it_begin != it_end; ++it_begin)
-		cout << *it_begin << " ";
-	cout << "size = " << vec.size() << " capacity = " << vec.capacity() << endl;
-}
+#include "test_utils.hpp"
 
 int main() {
+
 	{ //copy constructor
 
 	cout << "COPY CONSTRUCTOR" << endl << endl;
@@ -45,8 +16,8 @@ int main() {
 	cout << "vector2 capasity: " << vec2.capacity() << endl;
 	cout << endl;
 
-	printVector(vec, 1);
-	printVector(vec2, 2);
+	printVector(vec);
+	printVector(vec2);
 
 	cout << endl;
 	
@@ -67,8 +38,8 @@ int main() {
 	cout << "vector2 capasity: " << vec2.capacity() << endl;
 	cout << endl;
 
-	printVector(vec, 1);
-	printVector(vec2, 2);
+	printVector(vec);
+	printVector(vec2);
 
 	cout << endl;
 
@@ -114,28 +85,30 @@ int main() {
 
 	{ //insert
 	
-	cout << "INSERT" << endl << endl;
+	// cout << "INSERT" << endl << endl;
 
-	std::vector<int> vec;
-	vec.push_back(7);
-	vec.push_back(7);
-	vec.push_back(7);
-	vec.push_back(7);
+	// std::vector<int> vec;
+	// vec.push_back(7);
+	// vec.push_back(7);
+	// vec.push_back(7);
+	// vec.push_back(7);
 
-	printVector(vec);
+	// printVector(vec);
 	
-	vec.insert(vec.begin(), 1);
-	vec.insert(vec.begin() + 2, 2);
-	cout << "insert" << endl;
+	// vec.insert(vec.begin(), 1);
+	// vec.insert(vec.begin() + 2, 2);
+	// cout << "insert" << endl;
 
-	printVector(vec);
+	// printVector(vec);
 
-	vec.insert(vec.begin() + 2, 10, 2);
-	cout << "insert" << endl;
+	// vec.insert(vec.begin() + 2, 10, 2);
+	// cout << "insert" << endl;
 
-	printVector(vec);
+	// printVector(vec);
 
-	cout << endl;
+	// cout << endl;
+
+	// insertTest();
 
 	}
 
@@ -183,11 +156,11 @@ int main() {
 	cout << " size = " << vec.size() << " capacity = " << vec.capacity() << endl;
 
 	ft::Vector<int>::iterator it = vec.begin() + 2;
-	vec.insert(it, 83);
-	it += 5;
-	vec.insert(it, 3, 19);
-	it += 5;
-	vec.insert(it, 16, 11);
+	// vec.insert(it, 83);
+	// it += 5;
+	// vec.insert(it, 3, 19);
+	// it += 5;
+	// vec.insert(it, 16, 11);
 
 	ft::Vector<int> vec2;
 	for (int i = 100; i < 150; ++i)
@@ -232,6 +205,8 @@ int main() {
 	cout << endl;
 
 	}
+
+	insertTest();
 	
 	return (0);
 }
