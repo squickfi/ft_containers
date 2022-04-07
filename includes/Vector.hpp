@@ -109,19 +109,19 @@ namespace ft {
 
 	};
 
-	template <class T>
-	class ReverseVectorIterator : public reverse_iterator<VectorIterator<T> > {};
+	// template <class T>
+	// class ReverseVectorIterator : public reverse_iterator<VectorIterator<T> > {};
 
-	template <class T>
-	class ConstReverseVectorIterator : public ReverseVectorIterator<T> {
+	// template <class T>
+	// class ConstReverseVectorIterator : public ReverseVectorIterator<T> {
 
-		public:
+	// 	public:
 
-			typedef typename VectorIterator<T>::reference     		reference;
-        	typedef typename VectorIterator<T>::pointer       		pointer;   
-        	typedef const typename VectorIterator<T>::reference     const_reference;
-        	typedef const typename VectorIterator<T>::pointer       const_pointer;   
-	};
+	// 		typedef typename VectorIterator<T>::reference     		reference;
+    //     	typedef typename VectorIterator<T>::pointer       		pointer;   
+    //     	typedef const typename VectorIterator<T>::reference     const_reference;
+    //     	typedef const typename VectorIterator<T>::pointer       const_pointer;   
+	// };
 
 	/***********
 	** Vector **
@@ -142,8 +142,10 @@ namespace ft {
 			typedef typename Allocator::const_pointer	const_pointer;
 			typedef VectorIterator<T>					iterator;
 			typedef ConstVectorIterator<T>				const_iterator;
-			typedef ReverseVectorIterator<T>			reverse_iterator;
-			typedef ConstReverseVectorIterator<T>		const_reverse_iterator;
+			typedef ft::reverse_iterator<iterator>			reverse_iterator;
+			typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
+			// typedef ReverseVectorIterator<T>			reverse_iterator;
+			// typedef ConstReverseVectorIterator<T>		const_reverse_iterator;
 
 		private:
 
@@ -440,39 +442,92 @@ namespace ft {
 					_alloc.destroy(p + --_size);
 			}
 
-			iterator insert(iterator pos, const T& value) { // TO DO: change it
+			iterator insert(iterator pos, const T& value) {
 
 				if (_size == _capacity) {
 
 					size_type _new_capacity = _capacity ? _capacity * 2 : 1;
 					pointer tmp = _alloc.allocate(_new_capacity);
+					iterator _new_pos;
 					size_type i = _size;
-					for (iterator it = end(); it != pos; --it, --i)
-						_alloc.construct(tmp + i, p[i - 1]);
-					_alloc.construct(tmp + i, value);
-					while (i) {
-						
-						--i;
-						_alloc.construct(tmp + i, p[i]);
+					for (iterator it = end(); it != pos; --it, --i) {
+
+						try {
+							_alloc.construct(tmp + i, p[i - 1]);
+						} catch (...) {
+							for (; i; --i)
+								_alloc.destroy(tmp + i - 1);
+							_alloc.deallocate(tmp, _new_capacity);
+							for (i = _size; i; --i)
+								_alloc.destroy(p + i - 1);
+							_alloc.deallocate(p, _capacity);
+							throw "vector";
+						}
 					}
-					for (size_type j = 0; j < _size; ++j)
-						_alloc.destroy(p + j);
+					try {
+						_alloc.construct(tmp + i, value);
+						_new_pos = tmp + i;
+					} catch (...) {
+						for (; i; --i)
+							_alloc.destroy(tmp + i - 1);
+						_alloc.deallocate(tmp, _new_capacity);
+						for (i = _size; i; --i)
+							_alloc.destroy(p + i - 1);
+						_alloc.deallocate(p, _capacity);
+						throw "vector";
+					}
+					for (; i; --i) {
+
+						try {
+							_alloc.construct(tmp + i - 1, p[i - 1]);
+						} catch (...) {
+							for (; i; --i)
+								_alloc.destroy(tmp + i - 1);
+							_alloc.deallocate(tmp, _new_capacity);
+							for (i = _size; i; --i)
+								_alloc.destroy(p + i - 1);
+							_alloc.deallocate(p, _capacity);
+							throw "vector";
+						}
+					}
+					for (i = 0; i < _size; ++i)
+						_alloc.destroy(p + i);
 					_alloc.deallocate(p, _capacity);
-					p = tmp;
 					_capacity = _new_capacity;
 					++_size;
+					p = tmp;
+					return _new_pos;
 				}
 				else {
 
 					size_type i = _size;
-					for (iterator it = end(); it != pos; --it, --i) {
+					for (iterator it = end(); it != pos; --it) {
 
-						_alloc.construct(p + i, p[i - 1]);
-						_alloc.destroy(p + i - 1);
+						try {
+							_alloc.construct(p + i, p[i - 1]);
+						} catch (...) {
+							for (size_type j = i; j < _size; ++j)
+								_alloc.destroy(p + j + 1);
+							for (; i; --i)
+								_alloc.destroy(p + i - 1);
+							_alloc.deallocate(p, _capacity);
+							throw "vector";
+						}
+						--i;
+						_alloc.destroy(p + i);
 					}
-					_alloc.construct(p + i, value);
-					++_size;
-				}
+					try {
+						_alloc.construct(p + i, value);
+					} catch (...) {
+						for (size_type j = i; j < _size; ++j)
+							_alloc.destroy(p + j + 1);
+						for (; i; --i)
+							_alloc.destroy(p + i - 1);
+						_alloc.deallocate(p, _capacity);
+						throw "vector";
+					}
+				}		
+				++_size;
 				return pos;
 			}
 
@@ -578,45 +633,99 @@ namespace ft {
 				size_type count = 0;
 				for (InputIt it = first; it != last; ++it, ++count);
 
-				if (_size + count >= _capacity) {
+				if (_size + count > _capacity) {
 
-					if (!_capacity)
-						++_capacity;
-					while (_size + count >= _capacity)
-						_capacity *= 2;
-					pointer tmp = _alloc.allocate(_capacity);
+					size_type _new_capacity = _capacity ? _capacity * 2 : 1;
+					while (_size + count > _new_capacity)
+						_new_capacity *= 2;
+					pointer tmp = _alloc.allocate(_new_capacity);
+					size_type i = 0;
+					for (iterator it = begin(); it != pos; ++it, ++i) {
 
-					size_type i = _size + count - 1;
-					iterator stopCopying = pos + count - 1;
+						try {
+							_alloc.construct(tmp + i, p[i]);
+						} catch (...) {
+							for (; i; --i)
+								_alloc.destroy(tmp + i - 1);
+							_alloc.deallocate(tmp, _new_capacity);
+							for (i = 0; i < _size; ++i)
+								_alloc.destroy(p + i);
+							_alloc.deallocate(p, _capacity);
+							throw "vector";
+						}
+					}
+					for (; first != last; ++first, ++i) {
 
-					for (iterator it = end() + count - 1; it > stopCopying; --it, --i)
-						_alloc.construct(tmp + i, *(p + i - count));
-					for (InputIt it = last - 1; it != first - 1; --it, --i)
-						_alloc.construct(tmp + i, *it);
-					for (; i; --i)
-						_alloc.construct(tmp + i, *(p + i));
-					_alloc.construct(tmp, *p);
-					destroyVector();
+						try {
+							_alloc.construct(tmp + i, *first);
+						} catch (...) {
+							for (; i; --i)
+								_alloc.destroy(tmp + i - 1);
+							_alloc.deallocate(tmp, _new_capacity);
+							for (i = 0; i < _size; ++i)
+								_alloc.destroy(p + i);
+							_alloc.deallocate(p, _capacity);
+							throw "vector";
+						}
+					}
+					for (; i - count < _size; ++i) {
+
+						try {
+							_alloc.construct(tmp + i, p[i - count]);
+						} catch (...) {
+							for (; i; --i)
+								_alloc.destroy(tmp + i - 1);
+							_alloc.deallocate(tmp, _new_capacity);
+							for (i = 0; i < _size; ++i)
+								_alloc.destroy(p + i);
+							_alloc.deallocate(p, _capacity);
+							throw "vector";
+						}
+					}
+					for (i = 0; i < _size; ++i)
+						_alloc.destroy(p + i);
+					_alloc.deallocate(p, _capacity);
+					_capacity = _new_capacity;
+					_size += count;
 					p = tmp;
 				}
 				else {
 
-					size_type i = _size + count - 1;
-					iterator stopCopying = pos + count - 1;
-					for (iterator it = end() + count - 1; it > stopCopying; --it, --i) {
+					size_type stopCopying = count;
+					size_type i = _size + count;
+					for (iterator it = begin(); it != pos; ++it, ++stopCopying);
+					for (; i != stopCopying; --i) {
 
-						if (i < _size)
-							_alloc.destroy(p + i);
-						_alloc.construct(p + i, *(p + i - count));
+						try {
+							if (i - 1 < _size)
+								_alloc.destroy(p + i - 1);
+							_alloc.construct(p + i - 1, p[i - count - 1]);
+						} catch (...) {
+							for (size_type _count = i; _count != _size + count - 1; ++_count)
+								_alloc.destroy(p + _count + 1);
+							for (; i; --i)
+								_alloc.destroy(p + i - 1);
+							_alloc.deallocate(p, _capacity);
+							throw "vector";
+						}
 					}
-					for (InputIt it = last - 1; it != first - 1; --it, --i) {
+					for (; last != first; --last, --i) {
 
-						if (i < _size)
-							_alloc.destroy(p + i);
-						_alloc.construct(p + i, *it);
-					}			
+						try {
+							if (i < _size)
+								_alloc.destroy(p + i - 1);
+							_alloc.construct(p + i - 1, *(last - 1));
+						} catch (...) {
+							for (size_type _count = i; _count != _size + count - 1; ++_count)
+								_alloc.destroy(p + _count + 1);
+							for (; i; --i)
+								_alloc.destroy(p + i - 1);
+							_alloc.deallocate(p, _capacity);
+							throw "vector";
+						}
+					}
+					_size += count;
 				}
-				_size += count;
 			}
 
 			iterator erase(iterator pos) {
@@ -627,7 +736,16 @@ namespace ft {
 				for (; count != _size - 1; ++count) {
 
 					_alloc.destroy(p + count);
-					_alloc.construct(p + count, *(p + count + 1));
+					try {
+						_alloc.construct(p + count, *(p + count + 1));
+					} catch (...) {
+						for (size_type i = count + 1; i !=_size; ++i)
+							_alloc.destroy(p + i);
+						for (size_type i = count; i; --i)
+							_alloc.destroy(p + i - 1);
+						_alloc.deallocate(p, _capacity);
+						throw "vector";
+					}
 				}
 				_alloc.destroy(p + count + 1);
 				--_size;
