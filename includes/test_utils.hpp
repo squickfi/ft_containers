@@ -34,8 +34,6 @@ void printVector(ft::Vector<T> &vec) {
 
 void insertTest();
 
-template <typename T>
-void insert_test_1(std::vector<T> vector);
+void reverseIteratorTest();
 
-template <typename T>
-void insert_test_1(ft::Vector<T> vector, int);
+void eraseTest();
