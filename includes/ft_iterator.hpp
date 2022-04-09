@@ -112,38 +112,38 @@ namespace ft {
 	***********************/
 
 	template< class Iterator1, class Iterator2 >
-	bool operator==( const ft::reverse_iterator<Iterator1>& lhs,
+	bool operator==(const ft::reverse_iterator<Iterator1>& lhs,
 				const ft::reverse_iterator<Iterator2>& rhs ) { 
 		return (lhs.base() == rhs.base());
 	}
 
 	template< class Iterator1, class Iterator2 >
-	bool operator!=( const ft::reverse_iterator<Iterator1>& lhs,
-				const ft::reverse_iterator<Iterator2>& rhs ) { 
+	bool operator!=(const ft::reverse_iterator<Iterator1>& lhs,
+				const ft::reverse_iterator<Iterator2>& rhs) { 
 		return (lhs.base() != rhs.base());
 	}
 
 	template< class Iterator1, class Iterator2 >
-	bool operator<( const ft::reverse_iterator<Iterator1>& lhs,
-				const ft::reverse_iterator<Iterator2>& rhs ) { 
+	bool operator<(const ft::reverse_iterator<Iterator1>& lhs,
+				const ft::reverse_iterator<Iterator2>& rhs) { 
 		return (lhs.base() < rhs.base());
 	}
 
 	template< class Iterator1, class Iterator2 >
-	bool operator<=( const ft::reverse_iterator<Iterator1>& lhs,
-				const ft::reverse_iterator<Iterator2>& rhs ) { 
+	bool operator<=(const ft::reverse_iterator<Iterator1>& lhs,
+				const ft::reverse_iterator<Iterator2>& rhs) { 
 		return (lhs.base() <= rhs.base());
 	}
 
 	template< class Iterator1, class Iterator2 >
-	bool operator>( const ft::reverse_iterator<Iterator1>& lhs,
-				const ft::reverse_iterator<Iterator2>& rhs ) { 
+	bool operator>(const ft::reverse_iterator<Iterator1>& lhs,
+				const ft::reverse_iterator<Iterator2>& rhs) { 
 		return (lhs.base() > rhs.base());
 	}
 
 	template< class Iterator1, class Iterator2 >
-	bool operator>=( const ft::reverse_iterator<Iterator1>& lhs,
-				const ft::reverse_iterator<Iterator2>& rhs ) { 
+	bool operator>=(const ft::reverse_iterator<Iterator1>& lhs,
+				const ft::reverse_iterator<Iterator2>& rhs) { 
 		return (lhs.base() >= rhs.base());
 	}
 }

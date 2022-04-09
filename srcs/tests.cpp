@@ -215,11 +215,15 @@ int main() {
 
 	eraseTest();
 
-	ft::Vector<int> v(20, 1);
-	ft::Vector<int>::iterator I1 = v.begin() + 13;
-	ft::Vector<int>::iterator I2 = v.begin() + 2;
+	// std::vector<int>::iterator::iterator_category
 
-	cout << I1 - I2 << endl;
-	
+	ft::Vector<int> v(20, 1);
+	ft::Vector<int>::iterator I1 = v.begin();
+	ft::Vector<int>::iterator I2 = v.begin();
+
+	cout << I1 - v.begin() << endl;
+
+	std::stack<int> s;
+
 	return (0);
 }

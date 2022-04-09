@@ -7,17 +7,17 @@
 
 namespace ft {
 
-	template <class T>
+	template <class Iterator>
 	class VectorIterator {
 
 		public:
 
-			typedef typename ft::iterator_traits<T *>::value_type 			value_type;
-			typedef typename ft::iterator_traits<T *>::reference 			reference;
-			typedef typename ft::iterator_traits<T *>::pointer				pointer;
-			typedef typename ft::iterator_traits<T *>::difference_type		difference_type;
-			typedef typename ft::iterator_traits<T *>::iterator_category	iterator_category;
-			typedef typename ft::iterator_traits<T *>::pointer				iterator_type;
+			typedef typename ft::iterator_traits<Iterator>::value_type 			value_type;
+			typedef typename ft::iterator_traits<Iterator>::reference 			reference;
+			typedef typename ft::iterator_traits<Iterator>::pointer				pointer;
+			typedef typename ft::iterator_traits<Iterator>::difference_type		difference_type;
+			typedef typename ft::iterator_traits<Iterator>::iterator_category	iterator_category;
+			typedef typename ft::iterator_traits<Iterator>::pointer				iterator_type;
 
 		private:
 
@@ -31,7 +31,7 @@ namespace ft {
 			~VectorIterator() {}
 			VectorIterator& operator = (const VectorIterator& other) {
 
-				p = other.p;
+				p = other.base();
 				return *this;
 			}
 
@@ -54,76 +54,55 @@ namespace ft {
 			VectorIterator operator ++ (int) { VectorIterator tmp(*this); ++p; return tmp; }
 			VectorIterator& operator -- () { --p; return *this; }
 			VectorIterator operator -- (int) { VectorIterator tmp(*this); --p; return tmp; }
-	};
 
-	template <class T>
-	class ConstVectorIterator { 
-
-		public:
-
-			typedef typename ft::iterator_traits<T *>::value_type 			value_type;
-			typedef typename ft::iterator_traits<T *>::reference 			reference;
-			typedef typename ft::iterator_traits<T *>::pointer				pointer;
-			typedef const typename VectorIterator<T>::reference				const_reference;
-			typedef const typename VectorIterator<T>::pointer				const_pointer;   
-			typedef typename ft::iterator_traits<T *>::difference_type		difference_type;
-			typedef typename ft::iterator_traits<T *>::iterator_category	iterator_category;
-			typedef typename ft::iterator_traits<T *>::pointer				iterator_type;
-
-		private:
-
-			pointer p;
-
-		public:
-
-			ConstVectorIterator() : p(NULL) {}
-			ConstVectorIterator(pointer _p) : p(_p) {}
-			ConstVectorIterator(const_pointer _p) : p(_p) {}
-			ConstVectorIterator(const ConstVectorIterator& other) : p(other.p) {}
-			~ConstVectorIterator() {}
-			ConstVectorIterator& operator = (const ConstVectorIterator& other) {
-
-				p = other.p;
-				return *this;
-			}
-
-			const_reference operator * () { return *this->p; }
-			const_pointer operator -> () { return &p; }
-			const_reference operator [] (difference_type n) { return *(p + n); }
-
-			bool operator == (const ConstVectorIterator& other) { return p == other.p; }
-			bool operator != (const ConstVectorIterator& other) { return p != other.p; }
-			bool operator > (const ConstVectorIterator& other) { return p > other.p; }
-			bool operator >= (const ConstVectorIterator& other) { return p >= other.p; }
-			bool operator < (const ConstVectorIterator& other) { return p < other.p; }
-			bool operator <= (const ConstVectorIterator& other) { return p <= other.p; }
-
-			ConstVectorIterator& operator += (difference_type n) { p += n; return *this; }
-			ConstVectorIterator& operator -= (difference_type n) { p -= n; return *this; }
-			ConstVectorIterator operator + (difference_type n) { ConstVectorIterator tmp(p); tmp += n; return tmp; }
-			ConstVectorIterator operator - (difference_type n) { ConstVectorIterator tmp(p); tmp -= n; return tmp; }
-			ConstVectorIterator& operator ++ () { ++p; return *this; }
-			ConstVectorIterator operator ++ (int) { ConstVectorIterator tmp(*this); ++p; return tmp; }
-			ConstVectorIterator& operator -- () { --p; return *this; }
-			ConstVectorIterator operator -- (int) { ConstVectorIterator tmp(*this); --p; return tmp; }
+			pointer base() const { return p; }
 
 	};
+	
+	template <class Iter1, class Iter2>
+	typename VectorIterator<Iter1>::difference_type operator - (const VectorIterator<Iter1>& lhs, const VectorIterator<Iter2>& rhs) {
+		return lhs.base() - rhs.base();
+	}
+	template <class Iter1, class Iter2>
+	bool operator == (const VectorIterator<Iter1>& lhs, const VectorIterator<Iter2>& rhs) {
+		return lhs.base() == rhs.base();
+	}
+	template <class Iter1, class Iter2>
+	bool operator != (const VectorIterator<Iter1>& lhs, const VectorIterator<Iter2>& rhs) {
+		return lhs.base() != rhs.base();
+	}
+	template <class Iter1, class Iter2>
+	bool operator > (const VectorIterator<Iter1>& lhs, const VectorIterator<Iter2>& rhs) {
+		return lhs.base() > rhs.base();
+	}
+	template <class Iter1, class Iter2>
+	bool operator >= (const VectorIterator<Iter1>& lhs, const VectorIterator<Iter2>& rhs) {
+		return lhs.base() >= rhs.base();
+	}
+	template <class Iter1, class Iter2>
+	bool operator < (const VectorIterator<Iter1>& lhs, const VectorIterator<Iter2>& rhs) {
+		return lhs.base() < rhs.base();
+	}
+	template <class Iter1, class Iter2>
+	bool operator <= (const VectorIterator<Iter1>& lhs, const VectorIterator<Iter2>& rhs) {
+		return lhs.base() <= rhs.base();
+	}
 
 	template < class T, class Allocator = std::allocator<T> >
 	class Vector {
 
 		public:
 
-			typedef T									value_type;
-   			typedef Allocator							allocator_type;
-			typedef std::size_t							size_type;
-			typedef std::ptrdiff_t						difference_type;
-			typedef value_type&							reference;
-			typedef const value_type&					const_reference;
-			typedef typename Allocator::pointer			pointer;
-			typedef typename Allocator::const_pointer	const_pointer;
-			typedef VectorIterator<T>					iterator;
-			typedef ConstVectorIterator<T>				const_iterator;
+			typedef T										value_type;
+   			typedef Allocator								allocator_type;
+			typedef std::size_t								size_type;
+			typedef std::ptrdiff_t							difference_type;
+			typedef value_type&								reference;
+			typedef const value_type&						const_reference;
+			typedef typename Allocator::pointer				pointer;
+			typedef typename Allocator::const_pointer		const_pointer;
+			typedef VectorIterator<pointer>					iterator;
+			typedef VectorIterator<const_pointer>			const_iterator;
 			typedef ft::reverse_iterator<iterator>			reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
@@ -134,7 +113,6 @@ namespace ft {
 			size_type		_capacity;
 			allocator_type	_alloc;
 
-
 			void destroyVector() {
 
 				for (size_type i = 0; i < _size; ++i)
@@ -144,9 +122,9 @@ namespace ft {
 
 		public:
 
-				/***	 ****	 ****
+				/***     ****     ****
 				** member functions **
-				****	 ****	 ***/
+				****     ****     ***/
 
 				// constructors
 				// destructors
@@ -162,7 +140,11 @@ namespace ft {
 				const Allocator& alloc = Allocator())
 				: _size(count), _capacity(count), _alloc(alloc) {
 
-				p = _alloc.allocate(count);
+				// try { // WHY
+					p = _alloc.allocate(count);
+				// } catch (...) {
+				// 	throw 3;//"vector: couldn't allocate memory";
+				// }
 				size_type i = 0;
 				try {
 					for (; i < count; ++i)
@@ -182,14 +164,22 @@ namespace ft {
 					
 				if (first > last)
 					throw std::length_error("vector");
-				p = _alloc.allocate(_capacity);
+				try {
+					p = _alloc.allocate(_capacity);
+				} catch (...) {
+					throw "vector: couldn't allocate memory";
+				}
 				assign(first, last);
 			}
 
 			Vector(const Vector& other) {
 
 				_size = _capacity = other.size();
-				p = _alloc.allocate(_capacity);
+				try {
+					p = _alloc.allocate(_capacity);
+				} catch (...) {
+					throw "vector: couldn't allocate memory";
+				}
 				size_type i = 0;
 				try {
 					for (; i < _capacity; ++i)
@@ -204,9 +194,7 @@ namespace ft {
 
 			~Vector() {
 
-				for (size_type i = 0; i < _size; ++i)
-					_alloc.destroy(p + i);
-				_alloc.deallocate(p, _capacity);
+				destroyVector();
 				_size = _capacity = 0;
 			}
 
@@ -214,9 +202,21 @@ namespace ft {
 
 				destroyVector();
 				_size = _capacity = other.size();
-				p = _alloc.allocate(_capacity);
-				for (size_type i = 0; i < _capacity; ++i)
-					_alloc.construct(p + i, other[i]);
+				try {
+					p = _alloc.allocate(_capacity);
+				} catch (...) {
+					throw "vector: couldn't allocate memory";
+				}
+				size_type i = 0;
+				try {
+					for (; i < _capacity; ++i)
+						_alloc.construct(p + i, other[i]);
+				} catch (...) {
+					for (; i; --i)
+						_alloc.destroy(p + i - 1);
+					_alloc.deallocate(p, _capacity);
+					throw "vector";
+				}
 				return *this;
 			}
 
@@ -225,7 +225,13 @@ namespace ft {
 				size_type i = 0;
 				if (count > _capacity)
 				{
-					pointer tmp = _alloc.allocate(count);
+					pointer tmp;
+					try {
+						tmp = _alloc.allocate(count);
+					} catch (...) {
+						destroyVector();
+						throw "vector: couldn't allocate memory";
+					}
 					try {
 						for (; i < count; ++i)
 							_alloc.construct(tmp + i, value);
@@ -276,7 +282,11 @@ namespace ft {
 
 					_alloc.deallocate(p, _capacity);
 					_capacity = count;
-					p = _alloc.allocate(_capacity);
+					try {
+						p = _alloc.allocate(_capacity);
+					} catch (...) {
+						throw "vector: couldn't allocate memory";
+					}
 				}
 				_size = count;
 				try {
@@ -438,9 +448,7 @@ namespace ft {
 							for (; i; --i)
 								_alloc.destroy(tmp + i - 1);
 							_alloc.deallocate(tmp, _new_capacity);
-							for (i = _size; i; --i)
-								_alloc.destroy(p + i - 1);
-							_alloc.deallocate(p, _capacity);
+							destroyVector();
 							throw "vector";
 						}
 					}
@@ -451,9 +459,7 @@ namespace ft {
 						for (; i; --i)
 							_alloc.destroy(tmp + i - 1);
 						_alloc.deallocate(tmp, _new_capacity);
-						for (i = _size; i; --i)
-							_alloc.destroy(p + i - 1);
-						_alloc.deallocate(p, _capacity);
+						destroyVector();
 						throw "vector";
 					}
 					for (; i; --i) {
@@ -464,15 +470,11 @@ namespace ft {
 							for (; i; --i)
 								_alloc.destroy(tmp + i - 1);
 							_alloc.deallocate(tmp, _new_capacity);
-							for (i = _size; i; --i)
-								_alloc.destroy(p + i - 1);
-							_alloc.deallocate(p, _capacity);
+							destroyVector();
 							throw "vector";
 						}
 					}
-					for (i = 0; i < _size; ++i)
-						_alloc.destroy(p + i);
-					_alloc.deallocate(p, _capacity);
+					destroyVector();
 					_capacity = _new_capacity;
 					++_size;
 					p = tmp;
@@ -516,7 +518,13 @@ namespace ft {
 				if (_size + count > _capacity) {
 
 					size_type _new_capacity = _size + count;
-					pointer tmp = _alloc.allocate(_new_capacity);
+					pointer tmp;
+					try {
+						tmp = _alloc.allocate(_new_capacity);
+					} catch (...) {
+						destroyVector();
+						throw "vector: couldn't allocate memory";
+					}
 					size_type i = 0;
 					iterator it = begin();
 					for (; it != pos; ++it, ++i) {
@@ -618,7 +626,13 @@ namespace ft {
 					size_type _new_capacity = _capacity ? _capacity * 2 : 1;
 					while (_size + count > _new_capacity)
 						_new_capacity *= 2;
-					pointer tmp = _alloc.allocate(_new_capacity);
+					pointer tmp;
+					try {
+						tmp = _alloc.allocate(_new_capacity);
+					} catch (...) {
+						destroyVector();
+						throw "vector: couldn't allocate memory";
+					}
 					size_type i = 0;
 					for (iterator it = begin(); it != pos; ++it, ++i) {
 
@@ -662,9 +676,7 @@ namespace ft {
 							throw "vector";
 						}
 					}
-					for (i = 0; i < _size; ++i)
-						_alloc.destroy(p + i);
-					_alloc.deallocate(p, _capacity);
+					destroyVector();
 					_capacity = _new_capacity;
 					_size += count;
 					p = tmp;
@@ -734,10 +746,9 @@ namespace ft {
 
 			iterator erase(iterator first, iterator last) {
 
-				size_type n = 0;
-				for (iterator it = begin(); it != first; ++it, ++n);
-				size_type count = 0;
-				for (iterator it = first; it != last; ++it, ++count);
+				iterator it = begin();
+				size_type n = first - it;
+				size_type count = last - first;
 				if (count == 0)
 					return last;
 				for (size_type i = 0; i < count; ++i)
@@ -767,7 +778,13 @@ namespace ft {
 				if (_size == _capacity) {
 
 					size_type _new_capacity = _capacity ? _capacity * 2 : 1;
-					pointer tmp = _alloc.allocate(_new_capacity);
+					pointer tmp;
+					try {
+						tmp = _alloc.allocate(_new_capacity);
+					} catch (...) {
+						destroyVector();
+						throw "vector: couldn't allocate memory";
+					}
 					for (size_type i = 0; i < _size; ++i) {
 
 						try {
@@ -836,26 +853,26 @@ namespace ft {
 	}
 }
 
-	template<class T, class Allocator>
-	bool operator!=(const ft::Vector<T, Allocator> & lhs, const ft::Vector<T, Allocator> & rhs) { return !(lhs == rhs); }
-	
-	template<class T, class Allocator>
-	bool operator<(const ft::Vector<T, Allocator> & lhs, const ft::Vector<T, Allocator> & rhs) {
-		int size = lhs.size() > rhs.size() ? rhs.size() : lhs.size();
-		for (int i = 0; i < size; i++)
-			if (rhs[i] != lhs[i])
-				return lhs[i] < rhs[i];
-		return lhs.size() < rhs.size();
-	}
+template<class T, class Allocator>
+bool operator!=(const ft::Vector<T, Allocator> & lhs, const ft::Vector<T, Allocator> & rhs) { return !(lhs == rhs); }
 
-	template<class T, class Allocator>
-	bool operator<=(const ft::Vector<T, Allocator> & lhs, const ft::Vector<T, Allocator> & rhs) {return lhs == rhs || lhs < rhs; }
+template<class T, class Allocator>
+bool operator<(const ft::Vector<T, Allocator> & lhs, const ft::Vector<T, Allocator> & rhs) {
+	int size = lhs.size() > rhs.size() ? rhs.size() : lhs.size();
+	for (int i = 0; i < size; i++)
+		if (rhs[i] != lhs[i])
+			return lhs[i] < rhs[i];
+	return lhs.size() < rhs.size();
+}
 
-	template<class T, class Allocator>
-	bool operator>(const ft::Vector<T, Allocator> & lhs, const ft::Vector<T, Allocator> & rhs)	{return !(lhs <= rhs); }
+template<class T, class Allocator>
+bool operator<=(const ft::Vector<T, Allocator> & lhs, const ft::Vector<T, Allocator> & rhs) { return lhs == rhs || lhs < rhs; }
 
-	template<class T, class Allocator>
-	bool operator>=(const ft::Vector<T, Allocator> & lhs, const ft::Vector<T, Allocator> & rhs)	{return !(lhs < rhs); }
+template<class T, class Allocator>
+bool operator>(const ft::Vector<T, Allocator> & lhs, const ft::Vector<T, Allocator> & rhs)	{ return !(lhs <= rhs); }
+
+template<class T, class Allocator>
+bool operator>=(const ft::Vector<T, Allocator> & lhs, const ft::Vector<T, Allocator> & rhs)	{ return !(lhs < rhs); }
 
 namespace std {
 
