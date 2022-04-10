@@ -3,6 +3,8 @@
 
 namespace ft {
 
+	
+
 	/********************
 	** iterator_traits **
 	********************/
@@ -62,9 +64,10 @@ namespace ft {
 			****          ***/
 
 			reverse_iterator() : current() {}
-			explicit reverse_iterator( iterator_type x ) : current(x) {}
+			explicit reverse_iterator(iterator_type x) : current(x) {}
+			explicit reverse_iterator(const reverse_iterator& x) : current(x.base()) {}
 			template <class U>
-			reverse_iterator( const reverse_iterator<U>& other ) : current(other.base) {}
+			reverse_iterator( const reverse_iterator<U>& other ) : current(other.base()) {}
 			
 			/***       ****
 			** operators **

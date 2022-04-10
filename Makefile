@@ -1,9 +1,6 @@
 NAME = test
 
-MAIN_SRC = tests.cpp\
-			insert_test.cpp\
-			reverse_iterator_test.cpp\
-			erase_test.cpp\
+MAIN_SRC = tests.cpp
 
 SRC = $(addprefix srcs/, $(MAIN_SRC))
 OBJ = $(SRC:.cpp=.o)

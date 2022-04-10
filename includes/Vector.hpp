@@ -5,6 +5,8 @@
 #include "ft_algorithm.hpp"
 #include "ft_iterator.hpp"
 
+#define _const_it const Iterator
+
 namespace ft {
 
 	template <class Iterator>
@@ -27,6 +29,7 @@ namespace ft {
 
 			VectorIterator() : p(NULL) {}
 			VectorIterator(pointer _p) : p(_p) {}
+			VectorIterator(const VectorIterator<value_type *> _p) : p(_p.base()) {}
 			VectorIterator(const VectorIterator& other) : p(other.p) {}
 			~VectorIterator() {}
 			VectorIterator& operator = (const VectorIterator& other) {
@@ -383,7 +386,7 @@ namespace ft {
 
 			size_type size() const { return _size; }
 
-			size_type max_size() const { return std::numeric_limits<difference_type>::max(); }
+			size_type max_size() const { return std::numeric_limits<difference_type>::max() / 2; }
 
 			void reserve(size_type new_cap) {
 
@@ -618,8 +621,8 @@ namespace ft {
 			void insert(iterator pos, typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type first,
 				InputIt last) {
 
-				size_type count = 0;
-				for (InputIt it = first; it != last; ++it, ++count);
+				size_type count = last - first;
+				// for (InputIt it = first; it != last; ++it, ++count);
 
 				if (_size + count > _capacity) {
 
@@ -683,9 +686,9 @@ namespace ft {
 				}
 				else {
 
-					size_type stopCopying = count;
+					size_type stopCopying = count + (pos - begin());
 					size_type i = _size + count;
-					for (iterator it = begin(); it != pos; ++it, ++stopCopying);
+					// for (iterator it = begin(); it != pos; ++it, ++stopCopying);
 					for (; i != stopCopying; --i) {
 
 						try {
