@@ -3,72 +3,11 @@
 #include <vector>
 #include "Vector.hpp"
 
+#include "VectorTestClass.hpp"
+
 int main() {
 
-	{ //copy constructor
-
-	cout << "COPY CONSTRUCTOR" << endl << endl;
-	std::vector<int> vec;
-	vec.push_back(7);
-	vec.push_back(7);
-	vec.push_back(7);
-	std::vector<int> vec2(vec);
-
-	cout << "Copied." << endl;
-	cout << "vector1 capasity: " << vec.capacity() << endl;
-	cout << "vector2 capasity: " << vec2.capacity() << endl;
-	cout << endl;
-
-	printVector(vec);
-	printVector(vec2);
-
-	cout << endl;
-	
-	}
-
-	{ //operator =
-
-	cout << "OPERATOR =" << endl << endl;
-	std::vector<int> vec;
-	vec.push_back(7);
-	vec.push_back(7);
-	vec.push_back(7);
-	std::vector<int> vec2;
-	vec2 = vec;
-
-	cout << " =" << endl;
-	cout << "vector1 capasity: " << vec.capacity() << endl;
-	cout << "vector2 capasity: " << vec2.capacity() << endl;
-	cout << endl;
-
-	printVector(vec);
-	printVector(vec2);
-
-	cout << endl;
-
-	}
-
-	{ //at
-	
-	cout << "AT" << endl << endl;
-
-	std::vector<int> vec;
-	vec.push_back(7);
-	vec.push_back(7);
-	vec.push_back(7);
-	try {
-		for (int i = 0; i < 10; ++i)
-			cout << vec.at(i) << " ";
-		cout << endl;
-	}
-	catch (const std::exception& e) {
-		std::cerr << endl << e.what() << endl;
-	}
-	cout << endl;
-
-	}
-
-	{ //clear
+	/*{ //clear
 	
 	cout << "CLEAR" << endl << endl;
 
@@ -207,23 +146,25 @@ int main() {
 
 	cout << endl;
 
+	}*/
+
+	{
+		VectorTest<int> vectorTest(7);
+
+		vectorTest.defaultConstructorTest();
+		vectorTest.constructorWithValueTest();
+		vectorTest.constructorWithIterators();
+		vectorTest.copyConstrucorTest();
+		vectorTest.copyAssigmentOperatorTest();
+		vectorTest.assignWithCountAndValuesTest();
+		vectorTest.assignWithIteratorsTest();
+		vectorTest.getAlloacatorTest();
+		vectorTest.atTest();
+		vectorTest.squiareBracketstest();
+		vectorTest.frontTest();
+		vectorTest.backTest();
+		vectorTest.dataTest();
+
 	}
 
-	insertTest();
-	
-	reverseIteratorTest();
-
-	eraseTest();
-
-	// std::vector<int>::iterator::iterator_category
-
-	ft::Vector<int> v(20, 1);
-	ft::Vector<int>::iterator I1 = v.begin();
-	ft::Vector<int>::iterator I2 = v.begin();
-
-	cout << I1 - v.begin() << endl;
-
-	std::stack<int> s;
-
-	return (0);
 }

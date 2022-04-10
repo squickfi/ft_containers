@@ -160,7 +160,7 @@ namespace ft {
 			template<typename InputIt>
 			Vector(InputIt first, InputIt last, const allocator_type & alloc = allocator_type(),
 				typename enable_if<!std::numeric_limits<InputIt>::is_specialized>::type * = 0)
-				: _alloc(alloc), _capacity(20), _size(0) {
+				: _size(0),  _capacity(20), _alloc(alloc) {
 					
 				if (first > last)
 					throw std::length_error("vector");
@@ -221,6 +221,9 @@ namespace ft {
 			}
 
 			void assign(size_type count, const T& value) {
+
+				if (count < 0 || count > max_size())
+					throw std::length_error("cannot create ft::vector larger than max_size()");
 
 				size_type i = 0;
 				if (count > _capacity)
@@ -318,11 +321,8 @@ namespace ft {
 
 			reference at(size_type pos) {
 
-				if (pos < 0 || pos >= _size) {
-
-					destroyVector();	
-					throw std::out_of_range("Vector:: out of range");
-				}
+				if (pos < 0 || pos >= _size) 
+					throw std::out_of_range("Vector:: range check: pos < 0 || pos >= this->size(), it's wrong :c");
 				return (p[pos]);
 			}
 
