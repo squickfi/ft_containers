@@ -14,7 +14,7 @@ int main() {
 
 	std::less<ft::pair<int, float> > l;
 
-	std::map<int, int>::iterator
+	// std::map<int, int>::iterator
 
 	cout << l(p2, p1) << endl;
 }
