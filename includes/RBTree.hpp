@@ -67,7 +67,29 @@ namespace ft {
 
 			RBTreeIterator& operator ++ () {
 
-				
+				if (!_node) {
+
+					if (_root) {
+
+						_node = _root;
+						while (_node->_left)
+							_node = _node->_left;
+					}
+					return *this;
+				}
+				if (_node->_right) {
+
+					_node = _node->_right;
+					while (_node->_left)
+						_node = _node->_left;					
+				}
+				else {
+
+					while (_node->_previous && _node->_previous->_right == _node)
+						_node = _node->_previous;
+					_node = _node->_previous;
+				}
+				return *this;
 			}
 
 			RBTreeIterator& operator ++ (int) {
@@ -79,9 +101,29 @@ namespace ft {
 
 			RBTreeIterator& operator -- () {
 
-				
-			}
+				if (!_node) {
 
+					if (_root) {
+
+						_node = _root;
+						while (_node->_right)
+							_node = _node->_right;
+					}
+					return *this;
+				}
+				if (_node->_left) {
+
+					_node = _node->_left;
+					while (_node->_right)
+						_node = _node->_right;
+				}
+				else {
+
+					while (_node->_previous && _node->_previous->_left == _node)
+						_node = _node->_previous;
+					_node = _node->_previous;
+				}
+			}
 	};
 
 	template <class T, class Compare = std::less<T>, class Allocator = std::allocator<T> >
@@ -89,16 +131,83 @@ namespace ft {
 
 		public:
 
-			typedef T	value_type;
-			typedef unsigned long	size_type;
-			typedef Allocator	allocator_type;
-			typedef Compare	comparator_type;
-			typedef RBtreeNode<T> Node;
-			// TO DO: typedef iterators
+			typedef T										value_type;
+			typedef unsigned long							size_type;
+			typedef Allocator								allocator_type;
+			typedef Compare									comparator_type;
+			typedef RBtreeNode<T>							Node;
+			typedef value_type&								reference;
+			typedef const value_type&						const_reference;
+			typedef typename allocator_type::pointer		pointer;
+			typedef typename allocator_type::const_pointer	const_pointer;
+			typedef RBTreeIterator<pointer>					iterator;
+			typedef RBTreeIterator<const_pointer>			const_iterator;
 
 		private:
 
-		Node* _root;	
+			Node*			_root;
+			allocator_type	_alloc;
+			comparator_type	_comp;
+
+			void clearTree(Node* node) {
+
+				if (!node)
+					return;
+				clearTree(node->_left);
+				clearTree(node->_right);
+				_alloc.destroy(node);
+				_alloc.deallocate(node, sizeof(Node));
+			}
+
+			void leftRotate(Node* node) {
+
+				if (!node->_right)
+					return;
+				Node* tmp = node->_right->_left;
+				node->_right->_previous = node->_previous;
+				node->_right->_left = node;
+				node->_previous = node->_right;
+				node->_right = tmp;
+			}
+
+			void rightRotate(Node* node) {
+
+				if (!node->_left)
+					return;
+				Node* tmp = node->_left->_right;
+				node->_left->_previous = node->_previous;
+				node->_left->_right = node;
+				node->_previous = node->_left;
+				node->_left = tmp;
+			}
+
+			//TO DO: findNode
+
+		public:
+
+			RBTree() : _root(NULL) {}
+
+			RBTree(const RBTree& other) {
+
+				iterator endIt = other.end();
+				for (iterator it = other.begin(); it != endIt; ++it)
+					insertNode(*it);// TO DO: insert function
+			}
+
+			RBTree& operator = (const RBTree& other) {
+
+				clearTree(_root);
+				iterator endIt = other.end();
+				for (iterator it = other.begin(); it != endIt; ++it)
+					insertNode(*it);
+				return *this;
+			}
+
+			~RBTree() {
+				clearTree(_root);
+			}
+
+			//TO DO: insert, erase
 	};
 
 }
