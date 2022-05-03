@@ -143,11 +143,7 @@ namespace ft {
 				const Allocator& alloc = Allocator())
 				: _size(count), _capacity(count), _alloc(alloc) {
 
-				// try { // WHY
-					p = _alloc.allocate(count);
-				// } catch (...) {
-				// 	throw 3;//"vector: couldn't allocate memory";
-				// }
+				p = _alloc.allocate(count);
 				size_type i = 0;
 				try {
 					for (; i < count; ++i)
@@ -622,7 +618,6 @@ namespace ft {
 				InputIt last) {
 
 				size_type count = last - first;
-				// for (InputIt it = first; it != last; ++it, ++count);
 
 				if (_size + count > _capacity) {
 
@@ -688,7 +683,6 @@ namespace ft {
 
 					size_type stopCopying = count + (pos - begin());
 					size_type i = _size + count;
-					// for (iterator it = begin(); it != pos; ++it, ++stopCopying);
 					for (; i != stopCopying; --i) {
 
 						try {

@@ -10,10 +10,10 @@ namespace ft {
 		RBtreeNode*	_previous;
 		RBtreeNode*	_left;
 		RBtreeNode*	_right;
-		T		_data;
+		T		_value;
 		bool	_is_red;
 		Node(T& data, RBtreeNode* previous = NULL, RBtreeNode* left = NULL, RBtreeNode* right = NULL, bool is_red = true)
-		:	_data(data), _previous(previous), _left(left), _right(right), _is_red(is_red) {}
+		:	_value(data), _previous(previous), _left(left), _right(right), _is_red(is_red) {}
 	};
 
 	template <class T>
@@ -37,8 +37,16 @@ namespace ft {
 		public:
 
 			RBTreeIterator() : _node(NULL), _root(NULL) {}
+
 			RBTreeIterator(const RBTreeIterator& other)
 			:	_node(other._node), _root(other._root) {}
+
+			RBTreeIterator(Node* node, Node* root)
+			:	_node(node), _root(root) {}
+
+			RBTreeIterator(Node* root)
+			:	_node(root), _root(root) {}
+
 			RBTreeIterator& operator = () {
 				_node = other._node;
 				_root = other._root;
@@ -54,23 +62,21 @@ namespace ft {
 			}
 
 			bool operator != (const RBTreeIterator& other) {
-				return !(*this == other);
+				return *this != other;
 			}
 
 			T& operator * () {
-				return _node->_data;
+				return _node->_value;
 			}
 
 			T* operator -> () {
-				return &(_node->_data);
+				return &(_node->_value);
 			}
 
 			RBTreeIterator& operator ++ () {
 
 				if (!_node) {
-
 					if (_root) {
-
 						_node = _root;
 						while (_node->_left)
 							_node = _node->_left;
@@ -78,13 +84,11 @@ namespace ft {
 					return *this;
 				}
 				if (_node->_right) {
-
 					_node = _node->_right;
 					while (_node->_left)
 						_node = _node->_left;					
 				}
 				else {
-
 					while (_node->_previous && _node->_previous->_right == _node)
 						_node = _node->_previous;
 					_node = _node->_previous;
@@ -102,9 +106,7 @@ namespace ft {
 			RBTreeIterator& operator -- () {
 
 				if (!_node) {
-
 					if (_root) {
-
 						_node = _root;
 						while (_node->_right)
 							_node = _node->_right;
@@ -112,17 +114,16 @@ namespace ft {
 					return *this;
 				}
 				if (_node->_left) {
-
 					_node = _node->_left;
 					while (_node->_right)
 						_node = _node->_right;
 				}
 				else {
-
 					while (_node->_previous && _node->_previous->_left == _node)
 						_node = _node->_previous;
 					_node = _node->_previous;
 				}
+				return *this;
 			}
 	};
 
@@ -181,17 +182,30 @@ namespace ft {
 				node->_left = tmp;
 			}
 
-			//TO DO: findNode
+			Node* createNode(T data) {
+
+				try {
+					Node* node = _alloc.allocate(sizeof(Node));
+				} catch (...) {
+					throw "can't create a node, allocation exception";
+				}
+				try {
+					_alloc.construct(node, data);
+				} catch (...) {
+					_alloc.deallocate(node, sizeof(Node));
+					throw "can't create a node, constructor exception";
+				}
+				return node;
+			}
 
 		public:
 
 			RBTree() : _root(NULL) {}
 
 			RBTree(const RBTree& other) {
-
 				iterator endIt = other.end();
 				for (iterator it = other.begin(); it != endIt; ++it)
-					insertNode(*it);// TO DO: insert function
+					insertNode(*it); // TODO: insert function, try catch
 			}
 
 			RBTree& operator = (const RBTree& other) {
@@ -199,7 +213,7 @@ namespace ft {
 				clearTree(_root);
 				iterator endIt = other.end();
 				for (iterator it = other.begin(); it != endIt; ++it)
-					insertNode(*it);
+					insertNode(*it); // TODO: try catch
 				return *this;
 			}
 
@@ -207,7 +221,79 @@ namespace ft {
 				clearTree(_root);
 			}
 
+			Node* findNode(value_type value) {
+
+				Node* node = _root;
+				while (node && node->_value != value) {
+					if (node->_value == NULL) {
+						return NULL;
+					}
+					if (_comp(node->_value, value)) // TODO: check this condition
+						node = node->_right;
+					else
+						node = node->_left;
+				}
+				return node;
+			}
+
+			RBTreeIterator<value_type> insert(value_type value) {
+
+				Node* new_node = createNode(value); //TODO try catch
+				RBTreeIterator<value_type> it(_root);
+				bool isNewNodeLeftChild = true;
+				bool isNewNodeParentLeftChild = true;
+
+				//finding place
+				while (*it != NULL) {
+					if (_comp(new_node._value, *it)) {
+						--it;
+					}
+					else {
+						++it;
+					}
+				}
+				//inserting element
+				if (it.getNode()->_previous) {
+					if (it.getNode()->_previous->_left == it.getNode()) {
+						it.getNode()->_previous->_left = new_node;
+					}
+					else {
+						it.getNode()->_previous->_right = new_node;
+						isNewNodeLeftChild = false;
+					}
+				}
+				new_node->_previous = it.getNode()->_previous;
+				//balance
+				if (isNewNodeLeftChild) {
+					if (new_node->_previous && new_node->_previous->_is_red) {
+						if (new_node->_previous->_previous) {
+							if (new_node->_previous->_previous->_left == new_node->_previous->_previous) {
+								isNewNodeParentLeftChild = true;
+							} else {
+								isNewNodeParentLeftChild = false;
+							}
+							if () // HERE!
+						}
+					}
+				}
+			}
+
 			//TO DO: insert, erase
 	};
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
