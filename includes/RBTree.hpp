@@ -236,12 +236,44 @@ namespace ft {
 				return node;
 			}
 
+		private:
+
+			void balanceLeftChild(Node* node) { // HERE!
+
+				if (node->_previous->_previous) {
+					if (node->_previous->_previous->_left == node->_previous) { // isNewNodeParentLeftChild
+						if (node->_previous->_previous && node->_previous->_previous->_right->_is_red) {
+							node->_previous->_is_red = false;
+							node->_previous->_previous->_right->_is_red = false;
+						} else {
+							node->_previous->_previous->_is_red = true;
+							leftRotate(node->_previous->_previous);
+						}
+					}
+					else {
+
+					}
+				}
+			}
+
+			void balanceRightChild(Node* node) {
+
+			}
+
+			void balanceInsert(Node* node) {
+
+				if (node->_previous && node->_previous->_is_red) {
+					node == node->_previous->_left ?						// isNewNodeLeftChild
+						balanceLeftChild(node) : balanceRightChild(node);
+				}
+				//else OK
+			}
+
+		public:
 			RBTreeIterator<value_type> insert(value_type value) {
 
 				Node* new_node = createNode(value); //TODO try catch
 				RBTreeIterator<value_type> it(_root);
-				bool isNewNodeLeftChild = true;
-				bool isNewNodeParentLeftChild = true;
 
 				//finding place
 				while (*it != NULL) {
@@ -259,23 +291,13 @@ namespace ft {
 					}
 					else {
 						it.getNode()->_previous->_right = new_node;
-						isNewNodeLeftChild = false;
 					}
 				}
 				new_node->_previous = it.getNode()->_previous;
-				//balance
-				if (isNewNodeLeftChild) {
-					if (new_node->_previous && new_node->_previous->_is_red) {
-						if (new_node->_previous->_previous) {
-							if (new_node->_previous->_previous->_left == new_node->_previous->_previous) {
-								isNewNodeParentLeftChild = true;
-							} else {
-								isNewNodeParentLeftChild = false;
-							}
-							if () // HERE!
-						}
-					}
-				}
+
+				balanceInsert(new_node);
+
+				return RBTreeIterator<value_type> iterator(new_node, _root);
 			}
 
 			//TO DO: insert, erase
