@@ -254,6 +254,9 @@ namespace ft {
 
 					}
 				}
+				else {
+					
+				}
 			}
 
 			void balanceRightChild(Node* node) {
@@ -277,12 +280,7 @@ namespace ft {
 
 				//finding place
 				while (*it != NULL) {
-					if (_comp(new_node._value, *it)) {
-						--it;
-					}
-					else {
-						++it;
-					}
+					_comp(new_node._value, *it) == 1 ? --it : ++it;
 				}
 				//inserting element
 				if (it.getNode()->_previous) {
