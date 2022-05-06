@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include "ft_utility.hpp"
 
 namespace ft {
 
@@ -58,7 +59,7 @@ namespace ft {
 			Node* getRoot() const { return _root; }
 
 			bool operator == (const RBTreeIterator& other) {
-				return _node == other.getNode() && _root == other.getRoot();
+				return _node == other._node && _root == other._root;
 			}
 
 			bool operator != (const RBTreeIterator& other) {
@@ -149,6 +150,7 @@ namespace ft {
 			Node*			_root;
 			allocator_type	_alloc;
 			comparator_type	_comp;
+			size_type 		_size;
 
 			void clearTree(Node* node) {
 
@@ -182,19 +184,21 @@ namespace ft {
 				node->_left = tmp;
 			}
 
-			Node* createNode(T data) {
+			Node* createNode(const T& data, Node* previous = NULL, Node* left = NULL, Node* right = NULL, bool is_red = true) {
 
+				Node* node;
 				try {
-					Node* node = _alloc.allocate(sizeof(Node));
+					node = _alloc.allocate(sizeof(Node));
 				} catch (...) {
 					throw "can't create a node, allocation exception";
 				}
 				try {
-					_alloc.construct(node, data);
+					_alloc.construct(node, Node(data, previous, left, right, is_red));
 				} catch (...) {
 					_alloc.deallocate(node, sizeof(Node));
 					throw "can't create a node, constructor exception";
 				}
+				++_size;
 				return node;
 			}
 
@@ -238,64 +242,18 @@ namespace ft {
 
 		private:
 
-			void balanceLeftChild(Node* node) { // HERE!
-
-				if (node->_previous->_previous) {
-					if (node->_previous->_previous->_left == node->_previous) { // isNewNodeParentLeftChild
-						if (node->_previous->_previous && node->_previous->_previous->_right->_is_red) {
-							node->_previous->_is_red = false;
-							node->_previous->_previous->_right->_is_red = false;
-						} else {
-							node->_previous->_previous->_is_red = true;
-							leftRotate(node->_previous->_previous);
-						}
-					}
-					else {
-
-					}
-				}
-				else {
-					
-				}
-			}
-
-			void balanceRightChild(Node* node) {
-
+			bool isRed(Node* node) {
+				return node && node->_is_red;
 			}
 
 			void balanceInsert(Node* node) {
 
-				if (node->_previous && node->_previous->_is_red) {
-					node == node->_previous->_left ?						// isNewNodeLeftChild
-						balanceLeftChild(node) : balanceRightChild(node);
-				}
-				//else OK
 			}
 
 		public:
-			RBTreeIterator<value_type> insert(value_type value) {
+			ft::pair<Node*, bool> insertNode(Node** node) {
 
-				Node* new_node = createNode(value); //TODO try catch
-				RBTreeIterator<value_type> it(_root);
 
-				//finding place
-				while (*it != NULL) {
-					_comp(new_node._value, *it) == 1 ? --it : ++it;
-				}
-				//inserting element
-				if (it.getNode()->_previous) {
-					if (it.getNode()->_previous->_left == it.getNode()) {
-						it.getNode()->_previous->_left = new_node;
-					}
-					else {
-						it.getNode()->_previous->_right = new_node;
-					}
-				}
-				new_node->_previous = it.getNode()->_previous;
-
-				balanceInsert(new_node);
-
-				return RBTreeIterator<value_type> iterator(new_node, _root);
 			}
 
 			//TO DO: insert, erase
