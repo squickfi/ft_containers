@@ -202,6 +202,12 @@ namespace ft {
 				return node;
 			}
 
+			void removeNode(Node* node) {
+				_alloc.destroy(node);
+				_alloc.deallocate(node, sizeof(Node));
+				--_size;
+			}
+
 		public:
 
 			RBTree() : _root(NULL) {}
@@ -246,17 +252,152 @@ namespace ft {
 				return node && node->_is_red;
 			}
 
+			bool isLeftChild(Node* node) {
+				return node && node->_previous && node == node->_previous->_left;
+			}
+
 			void balanceInsert(Node* node) {
 
+				node->_is_red = node != _root;
+				while (node != _root && node->_previous->_is_red) {
+					if (isLeftChild(node->_previous)) {
+						Node* nodeToCheck = node->_previous->_previous->_right;
+						if (nodeToCheck && nodeToCheck->_is_red) {
+							node = node->_previous;
+							node->_is_red = false;
+							node = node->_previous;
+							node->_is_red = node != _root;
+							nodeToCheck->_is_red = false;
+						}
+						else {
+							if (!isLeftChild(node->_previous)) {
+								node = node->_previous;
+								leftRotate(node);
+							}
+							node = node->_previous;
+							node->_is_red = false;
+							node = node->_previous;
+							node->_is_red - true;
+							rightRotate(node);
+							break;
+						}
+					}
+					else {
+						Node* nodeToCheck = node->_previous->_previous->_left;
+						if (nodeToCheck && nodeToCheck->_is_red) {
+							node = node->_previous;
+							node->_is_red = false;
+							node = node->_previous;
+							node->_is_red = node != _root;
+							nodeToCheck->_is_red = false;
+						}
+						else {
+							if (isLeftChild(node)) {
+								node = node->_previous;
+								rightRotate(node);
+							}
+							node = node->_previous;
+							node->_is_red = false;
+							node = node->_previous;
+							node->_is_red - true;
+							leftRotate(node);
+							break;
+						}
+					}
+				}
+			}
+
+			void swapNodes(Node* n1, Node* n2) {
+
+				std::swap(n1->_is_red, n2->_is_red);
+
+				if (n1->_left) {
+					n1->_left->_previous = n2;
+				}
+				if (n2->_left) {
+					n2->_left->_previous = n1;
+				}
+				std::swap(n1->_left, n2->_left);
+
+				if (n1->_right) {
+					n1->_right->_previous = n2;
+				}
+				if (n2->_right) {
+					n2->_right->_previous = n1;
+				}
+				std::swap(n1->_right, n2->_right);
+
+				if (n1->_previous) {
+					if (isLeftChild(n1)) {
+						n1->_previous->_left = n2;
+					}
+					else {
+						n1->_previous->_right = n2;
+					}
+				}
+				if (n2->_previous) {
+					if (isLeftChild(n2)) {
+						n2->_previous->_left = n1;
+					}
+					else {
+						n2->_previous->_right = n1;
+					}
+				}
+				std::swap(n1->_previous, n2->_previous);
 			}
 
 		public:
-			ft::pair<Node*, bool> insertNode(Node** node) {
 
+			ft::pair<Node*, bool> insertNode(Node** node, const T& value) {
 
+				Node* parent = *node ? (*node)->_previous : NULL;
+				while (*node) {
+					if (_comp(value, (*node)->_value)) {
+						parent = *node;
+						node = &((*node)->_left);
+					}
+					else if (_comp((*node)->_value, value)) {
+						parent = *node;
+						node = &((*node)->_left);
+					}
+					else {
+						return ft::make_pair(*node, false);
+					}
+				}
+				*node = createNode(value, parent); // TODO try catch
+				balanceInsert(*node);
+				return ft::make_pair(*node, true);
 			}
 
-			//TO DO: insert, erase
+			void eraseNode(Node* node) {
+
+				if (node->_left && node->_right) {
+
+				}
+				else if (node->_left) {
+
+				}
+				else if (node->_right) {
+
+				}
+				else {
+					if (node->_is_red) {
+						if (isLeftChild(node)) {
+							node->_previous->_left = NULL;
+						}
+						else {
+							node->_previous->_right = NULL;
+						}
+						removeNode((node));
+					}
+					else {
+						// HERE!
+					}
+				}
+//				balanceErase(); // TODO <--
+			}
+
+			//TODO erase
 	};
 
 }
