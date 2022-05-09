@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "ft_utility.hpp"
+#include "ft_iterator.hpp"
 
 namespace ft {
 
@@ -13,7 +14,7 @@ namespace ft {
 		RBtreeNode*	_right;
 		T		_value;
 		bool	_is_red;
-		Node(T& data, RBtreeNode* previous = NULL, RBtreeNode* left = NULL, RBtreeNode* right = NULL, bool is_red = true)
+		RBtreeNode(T& data, RBtreeNode* previous = NULL, RBtreeNode* left = NULL, RBtreeNode* right = NULL, bool is_red = true)
 		:	_value(data), _previous(previous), _left(left), _right(right), _is_red(is_red) {}
 	};
 
@@ -48,7 +49,7 @@ namespace ft {
 			RBTreeIterator(Node* root)
 			:	_node(root), _root(root) {}
 
-			RBTreeIterator& operator = () {
+			RBTreeIterator& operator = (const RBTreeIterator& other) {
 				_node = other._node;
 				_root = other._root;
 				return *this;
@@ -346,55 +347,59 @@ namespace ft {
 				std::swap(n1->_previous, n2->_previous);
 			}
 
+			void balanceErase(Node* newNode, Node* nodeParent) {
+				// HERE!
+			}
+
 		public:
 
-			ft::pair<Node*, bool> insertNode(Node** node, const T& value) {
+			ft::pair<Node*, bool> insertNode(Node* node, const T& value) {
 
-				Node* parent = *node ? (*node)->_previous : NULL;
-				while (*node) {
-					if (_comp(value, (*node)->_value)) {
-						parent = *node;
-						node = &((*node)->_left);
+				Node* parent = node ? node->_previous : NULL;
+				while (node) {
+					if (_comp(value, node->_value)) {
+						parent = node;
+						node = node->_left;
 					}
-					else if (_comp((*node)->_value, value)) {
-						parent = *node;
-						node = &((*node)->_left);
+					else if (_comp(node->_value, value)) {
+						parent = node;
+						node = node->_left;
 					}
 					else {
-						return ft::make_pair(*node, false);
+						return ft::make_pair(node, false);
 					}
 				}
-				*node = createNode(value, parent); // TODO try catch
-				balanceInsert(*node);
-				return ft::make_pair(*node, true);
+				node = createNode(value, parent); // TODO try catch
+				balanceInsert(node);
+				return ft::make_pair(node, true);
 			}
 
 			void eraseNode(Node* node) {
 
+				bool isRemovedRed = node->_is_red;
+				Node* nodeToPaste = node->_right;
+				Node* nodeParent = node->_previous;
+
 				if (node->_left && node->_right) {
-
-				}
-				else if (node->_left) {
-
-				}
-				else if (node->_right) {
-
-				}
-				else {
-					if (node->_is_red) {
-						if (isLeftChild(node)) {
-							node->_previous->_left = NULL;
-						}
-						else {
-							node->_previous->_right = NULL;
-						}
-						removeNode((node));
+					while (nodeToPaste->_left) {
+						nodeToPaste = nodeToPaste->_left;
 					}
-					else {
-						// HERE!
-					}
+					nodeToPaste->_previous = nodeParent;
+					nodeToPaste->_left = node->_left;
+					nodeToPaste->_right = node->_right;
 				}
-//				balanceErase(); // TODO <--
+				else if (node->_left || node->_right) {
+					nodeToPaste = node->_left ? node->_left : node->_right;
+					nodeToPaste->_previous = nodeParent;
+					nodeToPaste->_is_red = false;
+				}
+				if (nodeParent) {
+					isLeftChild(node) ?
+						nodeParent->_left = nodeToPaste : nodeParent->_right = nodeToPaste;
+				}
+				removeNode(node);
+				if (!isRemovedRed)
+					balanceErase(nodeToPaste, nodeParent); // TODO <--
 			}
 
 			//TODO erase

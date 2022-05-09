@@ -156,7 +156,7 @@ namespace ft {
 				}
 			}
 
-			template<typename InputIt>
+			template<typename InputIt> // TODO
 			Vector(InputIt first, InputIt last, const allocator_type & alloc = allocator_type(),
 				typename enable_if<!std::numeric_limits<InputIt>::is_specialized>::type * = 0)
 				: _size(0),  _capacity(20), _alloc(alloc) {
