@@ -14,7 +14,7 @@ namespace ft {
 		RBtreeNode*	_right;
 		T		_value;
 		bool	_is_red;
-		RBtreeNode(T& data, RBtreeNode* previous = NULL, RBtreeNode* left = NULL, RBtreeNode* right = NULL, bool is_red = true)
+		explicit RBtreeNode(const T& data, RBtreeNode* previous = NULL, RBtreeNode* left = NULL, RBtreeNode* right = NULL, bool is_red = true)
 		:	_value(data), _previous(previous), _left(left), _right(right), _is_red(is_red) {}
 	};
 
@@ -67,11 +67,11 @@ namespace ft {
 				return *this != other;
 			}
 
-			T& operator * () {
+			reference operator * () {
 				return _node->_value;
 			}
 
-			T* operator -> () {
+			pointer operator -> () {
 				return &(_node->_value);
 			}
 
@@ -88,7 +88,7 @@ namespace ft {
 				if (_node->_right) {
 					_node = _node->_right;
 					while (_node->_left)
-						_node = _node->_left;					
+						_node = _node->_left;
 				}
 				else {
 					while (_node->_previous && _node->_previous->_right == _node)
@@ -98,7 +98,7 @@ namespace ft {
 				return *this;
 			}
 
-			RBTreeIterator& operator ++ (int) {
+			RBTreeIterator operator ++ (int) {
 
 				RBTreeIterator tmp(*this);
 				++*this;
@@ -127,9 +127,16 @@ namespace ft {
 				}
 				return *this;
 			}
+
+			RBTreeIterator operator -- (int) {
+
+				RBTreeIterator tmp(*this);
+				--*this;
+				return tmp;
+			}
 	};
 
-	template <class T, class Compare = std::less<T>, class Allocator = std::allocator<T> >
+	template <class T, class Compare = std::less<T>, class Allocator = std::allocator<RBtreeNode<T> > >
 	class RBTree {
 
 		public:
@@ -160,7 +167,7 @@ namespace ft {
 				clearTree(node->_left);
 				clearTree(node->_right);
 				_alloc.destroy(node);
-				_alloc.deallocate(node, sizeof(Node));
+				_alloc.deallocate(node, 1);
 			}
 
 			void leftRotate(Node* node) {
@@ -189,14 +196,14 @@ namespace ft {
 
 				Node* node;
 				try {
-					node = _alloc.allocate(sizeof(Node));
+					node = _alloc.allocate(1);
 				} catch (...) {
 					throw "can't create a node, allocation exception";
 				}
 				try {
 					_alloc.construct(node, Node(data, previous, left, right, is_red));
 				} catch (...) {
-					_alloc.deallocate(node, sizeof(Node));
+					_alloc.deallocate(node, 1);
 					throw "can't create a node, constructor exception";
 				}
 				++_size;
@@ -205,26 +212,29 @@ namespace ft {
 
 			void removeNode(Node* node) {
 				_alloc.destroy(node);
-				_alloc.deallocate(node, sizeof(Node));
+				_alloc.deallocate(node, 1);
 				--_size;
 			}
 
 		public:
 
-			RBTree() : _root(NULL) {}
+			RBTree() : _root(NULL), _size(0) {}
 
-			RBTree(const RBTree& other) {
+			RBTree(const RBTree& other) : _size(other._size) {
 				iterator endIt = other.end();
-				for (iterator it = other.begin(); it != endIt; ++it)
-					insertNode(*it); // TODO: insert function, try catch
+				for (iterator it = other.begin(); it != endIt; ++it) {
+					insertNode(*it);
+				}
 			}
 
 			RBTree& operator = (const RBTree& other) {
 
 				clearTree(_root);
 				iterator endIt = other.end();
-				for (iterator it = other.begin(); it != endIt; ++it)
-					insertNode(*it); // TODO: try catch
+				for (iterator it = other.begin(); it != endIt; ++it) {
+					insertNode(*it);
+				}
+				_size = other._size;
 				return *this;
 			}
 
@@ -278,7 +288,7 @@ namespace ft {
 							node = node->_previous;
 							node->_is_red = false;
 							node = node->_previous;
-							node->_is_red - true;
+							node->_is_red = true;
 							rightRotate(node);
 							break;
 						}
@@ -300,10 +310,13 @@ namespace ft {
 							node = node->_previous;
 							node->_is_red = false;
 							node = node->_previous;
-							node->_is_red - true;
+							node->_is_red = true;
 							leftRotate(node);
 							break;
 						}
+					}
+					if (!node->_previous) {
+						_root = node;
 					}
 				}
 			}
@@ -329,54 +342,124 @@ namespace ft {
 				std::swap(n1->_right, n2->_right);
 
 				if (n1->_previous) {
-					if (isLeftChild(n1)) {
-						n1->_previous->_left = n2;
-					}
-					else {
-						n1->_previous->_right = n2;
-					}
+					isLeftChild(n1) ?
+						n1->_previous->_left = n2 : n1->_previous->_right = n2;
 				}
 				if (n2->_previous) {
-					if (isLeftChild(n2)) {
-						n2->_previous->_left = n1;
-					}
-					else {
-						n2->_previous->_right = n1;
-					}
+					isLeftChild(n2) ?
+						n2->_previous->_left = n1 : n2->_previous->_right = n1;
 				}
 				std::swap(n1->_previous, n2->_previous);
 			}
 
-			void balanceErase(Node* newNode, Node* nodeParent) {
-				// HERE!
+			void balanceLeftErase(Node* nodeParent) {
+
+				if (!nodeParent) {
+					return;
+				}
+				if (isRed(nodeParent->_right)) {
+					nodeParent->_right->_is_red = false;
+					nodeParent->_is_red = true;
+					leftRotate(nodeParent);
+					nodeParent = nodeParent->_previous;
+				}
+				if (nodeParent->_right && !isRed(nodeParent->_right) && !isRed(nodeParent->_left)) {
+					bool isParentRed = nodeParent->_is_red;
+					nodeParent->_right->_is_red = true;
+					nodeParent->_is_red = false;
+					if (isParentRed) {
+						balanceInsert(nodeParent);
+					}
+				}
+				if (nodeParent->_right && isRed(nodeParent->_right->_left)) {
+					std::swap(nodeParent->_right->_is_red, nodeParent->_right->_left->_is_red);
+					rightRotate(nodeParent->_right);
+				}
+				if (nodeParent->_right && isRed(nodeParent->_right->_right)) {
+					nodeParent->_right->_is_red = nodeParent->_is_red;
+					nodeParent->_right->_right->_is_red = false;
+					nodeParent->_is_red = false;
+					rightRotate(nodeParent);
+				}
 			}
 
+		void balanceRightErase(Node* nodeParent) {
+
+			if (!nodeParent) {
+				return;
+			}
+			if (isRed(nodeParent->_left)) {
+				nodeParent->_left->_is_red = false;
+				nodeParent->_is_red = true;
+				rightRotate(nodeParent);
+				nodeParent = nodeParent->_previous;
+			}
+			if (nodeParent->_left && !isRed(nodeParent->_left) && !isRed(nodeParent->_right)) {
+				bool isParentRed = nodeParent->_is_red;
+				nodeParent->_left->_is_red = true;
+				nodeParent->_is_red = false;
+				if (isParentRed) {
+					balanceInsert(nodeParent);
+				}
+			}
+			if (nodeParent->_left && isRed(nodeParent->_left->_right)) {
+				std::swap(nodeParent->_left->_is_red, nodeParent->_left->_right->_is_red);
+				leftRotate(nodeParent->_left);
+			}
+			if (nodeParent->_left && isRed(nodeParent->_left->_left)) {
+				nodeParent->_left->_is_red = nodeParent->_is_red;
+				nodeParent->_left->_left->_is_red = false;
+				nodeParent->_is_red = false;
+				leftRotate(nodeParent);
+			}
+		}
+
 		public:
+
+			Node *getRoot() {
+				return _root;
+			}
 
 			ft::pair<Node*, bool> insertNode(Node* node, const T& value) {
 
 				Node* parent = node ? node->_previous : NULL;
+				bool isLeft = true;
 				while (node) {
 					if (_comp(value, node->_value)) {
 						parent = node;
 						node = node->_left;
+						isLeft = true;
 					}
 					else if (_comp(node->_value, value)) {
 						parent = node;
-						node = node->_left;
+						node = node->_right;
+						isLeft = false;
 					}
 					else {
 						return ft::make_pair(node, false);
 					}
 				}
-				node = createNode(value, parent); // TODO try catch
+				try {
+					node = createNode(value, parent); // TODO throw exceptions not const char*!
+				} catch (...) {
+					clearTree(_root);
+					throw;
+				}
+				if (!_root) {
+					_root = node;
+				}
+				if (parent) {
+					isLeft ? parent->_left = node : parent->_right = node;
+				}
 				balanceInsert(node);
+				++_size;
 				return ft::make_pair(node, true);
 			}
 
 			void eraseNode(Node* node) {
 
 				bool isRemovedRed = node->_is_red;
+				bool isRemovedLeft = isLeftChild(node);
 				Node* nodeToPaste = node->_right;
 				Node* nodeParent = node->_previous;
 
@@ -398,11 +481,32 @@ namespace ft {
 						nodeParent->_left = nodeToPaste : nodeParent->_right = nodeToPaste;
 				}
 				removeNode(node);
-				if (!isRemovedRed)
-					balanceErase(nodeToPaste, nodeParent); // TODO <--
+				if (!isRemovedRed) {
+					isRemovedLeft ? balanceLeftErase(nodeParent) : balanceRightErase(nodeParent);
+				}
+				if (node == _root) {
+					_root = nodeToPaste;
+				}
+				--_size;
 			}
 
-			//TODO erase
+			RBTreeIterator<T> begin() {
+
+				Node* tmp = _root;
+				if (tmp) {
+					while (tmp->_left) {
+						tmp = tmp->_left;
+					}
+				}
+				RBTreeIterator<T> _begin(tmp);
+				return _begin;
+			}
+
+			RBTreeIterator<T> end() {
+
+				RBTreeIterator<T> _end(NULL);
+				return _end;
+			}
 	};
 
 }

@@ -7,7 +7,7 @@ OBJ = $(SRC:.cpp=.o)
 DEP = $(OBJ:.o=.d)
 
 CXX = c++
-CXXFLAGS = -MMD -I ./includes/ -Wall -Wextra -Werror -g
+CXXFLAGS = -MMD -I ./includes/ -g
 # -Wall -Wextra -Werror 
 
 all: $(NAME)

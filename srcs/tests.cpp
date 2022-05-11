@@ -2,19 +2,30 @@
 
 int main() {
 
-	ft::pair<int, float> p1(7, 42.1f);
-	ft::pair<int, float> p2(11, 21.3f);
+	std::map<int, int> map;
+	for (int i = 0; i < 10; ++i) {
+		map.insert(std::make_pair(i, i * 10));
+	}
+	auto it = map.begin();
 
-	ft::pair<double, int> p3(5.3, -7);
+	ft::RBTree<int> tree;
+	cout << "!!!" << endl;
+	tree.insertNode(tree.getRoot(), 4);
+	cout << "!!!" << endl;
+	tree.insertNode(tree.getRoot(), 7);
+	cout << "!!!" << endl;
+	tree.insertNode(tree.getRoot(), 9);
+	cout << "!!!" << endl;
+	tree.insertNode(tree.getRoot(), 1);
+	cout << "!!!" << endl;
 
-	ft::pair<int, float> p4 = ft::make_pair(7, 0.2);
-
-	cout << p3.first << " " << p3.second << endl;
-	cout << p4.first << " " << p4.second << endl;
-
-	std::less<ft::pair<int, float> > l;
-
-	// std::map<int, int>::iterator
-
-	cout << l(p2, p1) << endl;
+	ft::RBTreeIterator<int> iter = tree.begin();
+	tree.eraseNode(iter.getNode());
+	iter = tree.begin();
+	tree.eraseNode(iter.getNode());
+	iter = tree.begin();
+	cout << "..." << endl;
+	++iter;
+	--iter;
+	cout << *iter << endl;
 }
