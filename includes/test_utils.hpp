@@ -10,6 +10,7 @@
 #include "ft_utility.hpp"
 #include "Vector.hpp"
 #include "RBTree.hpp"
+#include "Map.hpp"
 
 using std::cout;
 using std::endl;

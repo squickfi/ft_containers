@@ -160,16 +160,6 @@ namespace ft {
 			comparator_type	_comp;
 			size_type 		_size;
 
-			void clearTree(Node* node) {
-
-				if (!node)
-					return;
-				clearTree(node->_left);
-				clearTree(node->_right);
-				_alloc.destroy(node);
-				_alloc.deallocate(node, 1);
-			}
-
 			void leftRotate(Node* node) {
 
 				if (!node->_right)
@@ -218,6 +208,15 @@ namespace ft {
 
 		public:
 
+			void clearTree(Node* node) {
+
+				if (!node)
+					return;
+				clearTree(node->_left);
+				clearTree(node->_right);
+				removeNode(node);
+			}
+
 			RBTree() : _root(NULL), _size(0) {}
 
 			RBTree(const RBTree& other) : _size(other._size) {
@@ -245,16 +244,18 @@ namespace ft {
 			Node* findNode(value_type value) {
 
 				Node* node = _root;
-				while (node && node->_value != value) {
-					if (node->_value == NULL) {
-						return NULL;
-					}
-					if (_comp(node->_value, value)) // TODO: check this condition
+				while (node) {
+					if (_comp(node->_value, value)) { // TODO: check this condition
 						node = node->_right;
-					else
+					}
+					else if (value, _comp(node->_value)) {
 						node = node->_left;
+					}
+					else {
+						return node;
+					}
 				}
-				return node;
+				return NULL;
 			}
 
 		private:
@@ -383,36 +384,36 @@ namespace ft {
 				}
 			}
 
-		void balanceRightErase(Node* nodeParent) {
+			void balanceRightErase(Node* nodeParent) {
 
-			if (!nodeParent) {
-				return;
-			}
-			if (isRed(nodeParent->_left)) {
-				nodeParent->_left->_is_red = false;
-				nodeParent->_is_red = true;
-				rightRotate(nodeParent);
-				nodeParent = nodeParent->_previous;
-			}
-			if (nodeParent->_left && !isRed(nodeParent->_left) && !isRed(nodeParent->_right)) {
-				bool isParentRed = nodeParent->_is_red;
-				nodeParent->_left->_is_red = true;
-				nodeParent->_is_red = false;
-				if (isParentRed) {
-					balanceInsert(nodeParent);
+				if (!nodeParent) {
+					return;
+				}
+				if (isRed(nodeParent->_left)) {
+					nodeParent->_left->_is_red = false;
+					nodeParent->_is_red = true;
+					rightRotate(nodeParent);
+					nodeParent = nodeParent->_previous;
+				}
+				if (nodeParent->_left && !isRed(nodeParent->_left) && !isRed(nodeParent->_right)) {
+					bool isParentRed = nodeParent->_is_red;
+					nodeParent->_left->_is_red = true;
+					nodeParent->_is_red = false;
+					if (isParentRed) {
+						balanceInsert(nodeParent);
+					}
+				}
+				if (nodeParent->_left && isRed(nodeParent->_left->_right)) {
+					std::swap(nodeParent->_left->_is_red, nodeParent->_left->_right->_is_red);
+					leftRotate(nodeParent->_left);
+				}
+				if (nodeParent->_left && isRed(nodeParent->_left->_left)) {
+					nodeParent->_left->_is_red = nodeParent->_is_red;
+					nodeParent->_left->_left->_is_red = false;
+					nodeParent->_is_red = false;
+					leftRotate(nodeParent);
 				}
 			}
-			if (nodeParent->_left && isRed(nodeParent->_left->_right)) {
-				std::swap(nodeParent->_left->_is_red, nodeParent->_left->_right->_is_red);
-				leftRotate(nodeParent->_left);
-			}
-			if (nodeParent->_left && isRed(nodeParent->_left->_left)) {
-				nodeParent->_left->_is_red = nodeParent->_is_red;
-				nodeParent->_left->_left->_is_red = false;
-				nodeParent->_is_red = false;
-				leftRotate(nodeParent);
-			}
-		}
 
 		public:
 
@@ -506,6 +507,10 @@ namespace ft {
 
 				RBTreeIterator<T> _end(NULL);
 				return _end;
+			}
+
+			size_type size() {
+				return _size;
 			}
 	};
 
