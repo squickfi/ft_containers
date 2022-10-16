@@ -11,6 +11,7 @@ CXXFLAGS = -MMD -I ./includes/ -g
 # -Wall -Wextra -Werror 
 
 all: $(NAME)
+	./test
 
 $(NAME): $(OBJ)
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
