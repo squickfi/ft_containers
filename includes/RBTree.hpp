@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   RBTree.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: jobject <jobject@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/02/08 13:10:49 by jobject           #+#    #+#             */
-/*   Updated: 2022/02/16 17:39:04 by jobject          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 
 # include <memory>
@@ -127,7 +115,6 @@ namespace ft {
         {
             tree_iterator temp(*this);
             ++(*this);
-//            std::cout << "....!!!!!!!!!!!!!!!!!!" << std::endl;
             return (temp);
         }
         tree_iterator& operator-- ()
@@ -320,9 +307,7 @@ namespace ft {
                 if (n->parent && n == n->parent->left) {
                     y->parent->left = y;
                 } else {
-//                std::cout << y->parent << ".......!!!!!................." << std::endl;
                     y->parent->right = y;
-//                std::cout << ".......!!!!!................." << std::endl;
                 }
                 y->left = n->left;
                 y->left->parent = y;
@@ -344,9 +329,7 @@ namespace ft {
         }
         size_type erase(const value_type& key)
         {
-//            std::cout << "!!!!!!!!!!!!!!" << std::endl;
             iterator it = find(key, true);
-//            std::cout << "!!!!!!!!!!!!!!" << std::endl;
 
             if (!it._node)
                 return (0);
@@ -781,4 +764,3 @@ namespace ft {
         }
     };
 }
-

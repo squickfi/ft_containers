@@ -2,9 +2,9 @@
 
 Implementation of std::vector, std::map, std::stack and std::set (mostly C++98).
 
- - [x] vector (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
- - [ ] map
- - [ ] stack
- - [ ] set
+ - [x] vector
+ - [x] map
+ - [x] stack
+ - [x] set
 
-❗**Not done yet.** ❗
+**Done (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧** 
